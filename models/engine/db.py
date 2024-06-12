@@ -60,3 +60,16 @@ class DB:
                     key = class_name + "." + obj.id
                     result[key] = obj
         return result
+    
+    def new(self, obj):
+        """add an object to the database"""
+        self.__session.add(obj)
+
+    def save(self):
+        """commit all changes of the database"""
+        self.__session.commit()
+
+    def delete(self, obj=None):
+        """delete from the database"""
+        if obj:
+            self.__session.delete(obj)
