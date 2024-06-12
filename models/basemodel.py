@@ -27,3 +27,7 @@ class BaseModel:
         else:
             self.time_created = datetime.now()
             self.time_updated = datetime.now()
+    
+    def __str__(self):
+        """Returns a string representation of the object"""
+        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
