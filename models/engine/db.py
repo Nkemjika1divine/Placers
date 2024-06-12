@@ -44,3 +44,19 @@ class DB:
                 Base.metadata.drop_all(self.__engine)
             except Exception:
                 print("There is no table in the database")
+    
+    def all(self, cls=None):
+        """query on the current database session"""
+        result = {}
+        if cls is not None:
+            for obj in self.__session.query(classes[cls]).all():
+                ClassName = obj.__class__.__name__
+                keyName = ClassName + "." + obj.id
+                result[keyName] = obj
+        else:
+            for cls in classes.values():
+                for obj in self.__session.query(cls).all():
+                    class_name = obj.__class__.__name__
+                    key = class_name + "." + obj.id
+                    result[key] = obj
+        return result

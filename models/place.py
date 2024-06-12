@@ -5,7 +5,7 @@ from models.basemodel import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, CheckConstraint
 
 
-categories = ["Religious institution",
+"""categories = ["Religious institution",
               "School",
               "Park",
               "Hotel",
@@ -15,7 +15,7 @@ categories = ["Religious institution",
               "Industry",
               "Studio",
               "Beach",
-              "Club"]
+              "Club"]"""
 
 
 class Place(BaseModel, Base):
@@ -23,7 +23,7 @@ class Place(BaseModel, Base):
     __tablename__ = "places"
     creator_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(50), nullable=False)
-    category = Column(String(50), CheckConstraint("category IN categories"),nullable=False)  # To be fixed
+    category = Column(String(50), nullable=False)
     address = Column(String(250), nullable=False, unique=True)
     longitude = Column(Decimal(10, 6), nullable=True)
     latitude = Column(Decimal(10, 6), nullable=True)
