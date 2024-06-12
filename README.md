@@ -11,4 +11,4 @@ Contributions are welcome! Please follow the guidelines.
 
 ## License
 
-This project is owned by Divine Nkemjika. Any attempt to steal it will result in cases you do not want on your doorsteps.
+Licenced by MIT.
