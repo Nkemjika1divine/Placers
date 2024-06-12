@@ -7,6 +7,7 @@ from models.review import Review
 from models.user import User
 from os import environ
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 load_dotenv()
@@ -73,3 +74,10 @@ class DB:
         """delete from the database"""
         if obj:
             self.__session.delete(obj)
+    
+    def reload(self):
+        """reloads from the database"""
+        Base.metadata.create_all(self.__engine)
+        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sess_factory)
+        self.__session = Session
