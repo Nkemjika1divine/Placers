@@ -5,7 +5,7 @@ from sqlalchemy import Column, String
 
 
 class User(BaseModel, Base):
-    """The User class"""
+    """The User model"""
     __tablename__ = "users"
     name = Column(String(50), nullable=False)
     username = Column(String(20), nullable=False, unique=True)

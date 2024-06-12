@@ -9,6 +9,11 @@ from sqlalchemy import create_engine
 load_dotenv()
 
 
+classes = {
+    "User": 
+}
+
+
 class DB:
     """The Database Class
     - Handles all database operations
