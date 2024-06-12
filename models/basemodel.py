@@ -3,6 +3,7 @@
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import declarative_base
+from typing import Dict
 from uuid import uuid4
 
 
@@ -16,7 +17,7 @@ class BaseModel:
     time_created = Column(DateTime, default=datetime.now, nullable=False)
     time_updated = Column(DateTime, default=datetime.now, nullable=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Initializing the Basemodel class"""
         if 'id' not in kwargs:
             self.id = str(uuid4())
@@ -32,7 +33,7 @@ class BaseModel:
             self.time_created = datetime.now()
             self.time_updated = datetime.now()
     
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, any]:
         """Returns a dictionary representation of the object"""
         copy = self.__dict__.copy()
         copy['__class__'] = self.__class__.__name__
@@ -44,6 +45,6 @@ class BaseModel:
             del copy["_sa_instance_state"]
         return copy
     
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a string representation of the object"""
         return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
