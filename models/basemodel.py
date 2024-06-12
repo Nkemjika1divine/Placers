@@ -2,7 +2,11 @@
 """The BaseModel Module"""
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import declarative_base
 from uuid import uuid4
+
+
+Base = declarative_base()
 
 
 class BaseModel:

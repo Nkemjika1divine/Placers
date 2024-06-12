@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """The Database Module"""
+from os import environ
 
 
 class DB:
@@ -8,3 +9,5 @@ class DB:
     """
     __session = None
     __engine = None
+
+    
