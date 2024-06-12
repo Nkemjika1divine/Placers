@@ -12,5 +12,5 @@ class Review(BaseModel, Base):
     rating = Column(Integer, CheckConstraint("rating >= 0 AND rating <= 10"), nullable=False)
     review = Column(String(200), nullable=True)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

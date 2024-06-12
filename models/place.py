@@ -28,5 +28,5 @@ class Place(BaseModel, Base):
     longitude = Column(Decimal(10, 6), nullable=True)
     latitude = Column(Decimal(10, 6), nullable=True)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

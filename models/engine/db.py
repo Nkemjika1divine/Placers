@@ -8,7 +8,7 @@ from models.user import User
 from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-
+from typing import Dict
 
 load_dotenv()
 
@@ -46,7 +46,7 @@ class DB:
             except Exception:
                 print("There is no table in the database")
     
-    def all(self, cls=None):
+    def all(self, cls=None) -> Dict[str: any]:
         """query on the current database session"""
         result = {}
         if cls is not None:
@@ -62,22 +62,35 @@ class DB:
                     result[key] = obj
         return result
     
-    def new(self, obj):
+    def new(self, obj) -> None:
         """add an object to the database"""
         self.__session.add(obj)
 
-    def save(self):
+    def save(self) -> None:
         """commit all changes of the database"""
         self.__session.commit()
 
-    def delete(self, obj=None):
+    def delete(self, obj=None) -> None:
         """delete from the database"""
         if obj:
             self.__session.delete(obj)
     
-    def reload(self):
+    def reload(self) -> None:
         """reloads from the database"""
         Base.metadata.create_all(self.__engine)
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
         self.__session = Session
+    
+    def count(self, cls=None) -> int:
+        """count the number of objects in storage"""
+        from models import storage
+        if not cls:
+            count = 0
+            all_classes = storage.all()
+            for i in all_classes:
+                count += 1
+            return count
+        else:
+            count = len(storage.all(cls))
+        return count
