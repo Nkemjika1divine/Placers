@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 """The Place Module"""
-from decimal import Decimal
 from models.basemodel import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, CheckConstraint
+from sqlalchemy import Column, String, ForeignKey, Float
 
 
 """categories = ["Religious institution",
@@ -25,8 +24,11 @@ class Place(BaseModel, Base):
     name = Column(String(50), nullable=False)
     category = Column(String(50), nullable=False)
     address = Column(String(250), nullable=False, unique=True)
-    longitude = Column(Decimal(10, 6), nullable=True)
-    latitude = Column(Decimal(10, 6), nullable=True)
+    city = Column(String(50), nullable=False)
+    state = Column(String(50), nullable=True)
+    country = Column(String(50), nullable=False)
+    longitude = Column(Float, nullable=True)
+    latitude = Column(Float, nullable=True)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

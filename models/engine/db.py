@@ -46,7 +46,7 @@ class DB:
             except Exception:
                 print("There is no table in the database")
     
-    def all(self, cls=None) -> Dict[str: any]:
+    def all(self, cls=None) -> Dict[str, any]:
         """query on the current database session"""
         result = {}
         if cls is not None:
