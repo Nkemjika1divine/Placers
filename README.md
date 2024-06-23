@@ -1,5 +1,5 @@
 <h1>Placers</h1>
-<h3>Everywhere at your fingers</h3>
+<h3>See the world...</h3>
 
 <h2>Description<h2>
 This is the backend for an application that allows a user to say what he/she thinks about a place he/she has visited.
