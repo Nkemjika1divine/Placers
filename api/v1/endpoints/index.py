@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 """Module conntaining index endpoints"""
-#!/usr/bin/python3
-"""Module deploying our FastAPI app"""
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Unauthorized, Forbidden
