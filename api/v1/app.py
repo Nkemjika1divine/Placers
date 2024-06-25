@@ -27,14 +27,14 @@ if os.environ.get("AUTH_TYPE") == "auth":
     auth = Auth()
 
 
-@app.route("/{any_path:path}")
+"""@app.route("/{any_path:path}")
 def return_the_path(any_path: str) -> str:
-    """Checks the url entered by the user and returns the endpoint"""
+    """"Checks the url entered by the user and returns the endpoint"""""
     if any_path:
         if any_path[0:22] == "https://localhost:8000":
             return any_path[22:]
         elif any_path[0:21] == "http://localhost:8000":
-            return any_path[21:]
+            return any_path[21:]"""
 
 
 def get_request_header(request: Request):
