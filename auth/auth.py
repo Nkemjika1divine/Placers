@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Basic authentication module"""
+from fastapi import Header, HTTPException
 from typing import List, TypeVar
 
 
@@ -31,8 +32,10 @@ class Auth:
                                 return True
         return False
     
-    def authorization_header(self, request=None) -> str:
-        return None
+    def authorization_header(self, request: str = Header(default=None)) -> str:
+        if request is None:
+            return None
+        return request
     
     def current_user(self, request=None) -> TypeVar('User'):
         return None
