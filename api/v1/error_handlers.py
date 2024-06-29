@@ -2,7 +2,8 @@
 """Module containing error handling classes"""
 from typing import Any, Dict
 from typing_extensions import Annotated, Doc
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
 

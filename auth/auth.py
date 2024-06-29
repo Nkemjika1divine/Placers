@@ -1,12 +1,18 @@
 #!/usr/bin/python3
 """Basic authentication module"""
-from api.v1.app import get_request_header
-from fastapi import Header, HTTPException
-from typing import List, TypeVar
+from fastapi import Header, HTTPException, Request, Depends
+from typing import Dict, List, TypeVar
 
 
 class Auth:
     """Authehtication class"""
+
+    async def get_request_header(self, request: Request) -> Dict:
+        """Accesses header in the user's request"""
+        if request:
+            return request.headers
+        else:
+            return {}
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """Checks if a path requires authentication.
@@ -29,16 +35,12 @@ class Auth:
                             count += 1
                             if path[0:count - 1] == paths[0:-1]:
                                 return False
-                            else:
-                                return True
-        return False
+                return True
     
-    def authorization_header(self, request=get_request_header()) -> str:
-        if request is None:
-            return None
-        if "Authorization" not in request:
-            return None
-        return request["Authorization"]
+    async def authorization_header(self, request: Request) -> str:
+        """Retrieves the authorization header from a request"""
+        headers = await self.get_request_header(request)
+        return headers.get("Authorization", None)
     
     def current_user(self, request=None) -> TypeVar('User'):
         return None

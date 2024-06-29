@@ -32,3 +32,7 @@ def unauthorized():
 def forbidden():
     """Raises Error 403 (Forbidden)"""
     raise Forbidden()
+
+@index_router.get("/login")
+def login():
+    return {"message": "home"}
