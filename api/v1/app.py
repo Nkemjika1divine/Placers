@@ -45,18 +45,13 @@ async def forbidden_handler(request: Request, exc: Forbidden):
     )
 
 
-
-
-
-
 auth = None
 if os.environ.get("AUTH_TYPE") == 'auth':
     from auth.auth import Auth
     auth = Auth()
+elif os.environ.get("AUTH_TYPE") == 'basic_auth':
+    from auth.basic_auth import BasicAuth
+    auth = BasicAuth()
 
 if auth:
     app.add_middleware(AuthMiddleware, auth=auth, excluded_paths=path_list)
-
-
-"""@app.add_exception_handler(Unauthorized, unauthorized_handler)
-@app.add_exception_handler(Forbidden, forbidden_handler)"""
