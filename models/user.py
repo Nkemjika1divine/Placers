@@ -3,6 +3,7 @@
 from models.basemodel import BaseModel, Base
 from sqlalchemy import Column, String
 from sqlalchemy.ext.hybrid import hybrid_property
+import base64
 import hashlib
 import hmac
 import os
@@ -37,6 +38,7 @@ class User(BaseModel, Base):
         """Hashes a user's password"""
         if not password or type(password) is not str:
             return None
+        """return base64.b64encode(password.encode('utf-8')).decode("utf-8")"""
         return hashlib.sha256(password.encode()).hexdigest().lower()
     
     def is_valid_password(self, password: str = None) -> bool:
@@ -46,6 +48,7 @@ class User(BaseModel, Base):
         if self._hashed_password is None:
             return False
         password_e = password.encode()
+        """return base64.b64encode(password.encode('utf-8')).decode("utf-8") == self._hashed_password"""
         return hashlib.sha256(password_e).hexdigest().lower() == self._hashed_password
     
     def display_name(self) -> str:

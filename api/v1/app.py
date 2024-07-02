@@ -2,6 +2,7 @@
 """Module deploying our FastAPI app"""
 import os
 from api.v1.endpoints.index import index_router
+from api.v1.endpoints.users import user_router
 from api.v1.error_handlers import Unauthorized, Forbidden
 from auth.middleware.middleware import AuthMiddleware
 from dotenv import load_dotenv
@@ -15,6 +16,7 @@ load_dotenv()
 app = FastAPI()
 api_prefix = "/api/v1"
 app.include_router(index_router, prefix=api_prefix)
+app.include_router(user_router, prefix=api_prefix)
 
 path_list = ['/api/v1/status', '/api/v1/forbidden', '/api/v1/unauthorized']
 
