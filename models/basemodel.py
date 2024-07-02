@@ -3,7 +3,7 @@
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import declarative_base
-from typing import Dict
+from typing import Dict, List, TypeVar
 from uuid import uuid4
 
 
@@ -60,3 +60,23 @@ class BaseModel:
         from models import storage
         """delete the current instance from the storage"""
         storage.delete(self)
+    
+    @classmethod
+    def search(cls, key_values: dict = {}) -> List[TypeVar('BaseModel')]:
+        """Searches and returns all objects with matching attributes"""
+        from models import storage
+        class_name = cls.__name__
+        all_data = storage.all(class_name)
+        return all_data
+        """class_list = []
+        if len(key_values) == 0:
+            return all_data
+        for key, value in key_values.items():
+            if getattr(cls, key) == value:
+                if all_data:
+                    for x, y in all_data.items():
+                        if getattr(cls, y) == value:
+                            class_list.append(y)
+        return class_list"""
+                
+        
