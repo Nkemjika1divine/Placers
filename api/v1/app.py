@@ -18,7 +18,7 @@ api_prefix = "/api/v1"
 app.include_router(index_router, prefix=api_prefix)
 app.include_router(user_router, prefix=api_prefix)
 
-path_list = ['/api/v1/status', '/api/v1/forbidden', '/api/v1/unauthorized']
+path_list = ['/api/v1/status*', '/api/v1/forbidden*', '/api/v1/unauthorized*']
 
 
 app.add_middleware(
