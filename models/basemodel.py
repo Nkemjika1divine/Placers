@@ -67,16 +67,25 @@ class BaseModel:
         from models import storage
         class_name = cls.__name__
         all_data = storage.all(class_name)
-        return all_data
-        """class_list = []
+        class_list = []
         if len(key_values) == 0:
-            return all_data
+            if all_data:
+                for key, value in all_data.items():
+                    class_list.append(value)
+                return class_list
         for key, value in key_values.items():
-            if getattr(cls, key) == value:
+            print("checking attribute of key")
+            print(f"{cls} {type(key)} {value}")
+            getattr_val = getattr(cls, key, "unknown")
+            print(getattr_val)
+            if getattr_val == value:
+                print("attribute of key = value")
                 if all_data:
                     for x, y in all_data.items():
-                        if getattr(cls, y) == value:
-                            class_list.append(y)
-        return class_list"""
+                        for m, n in y.__dict__.items():
+                            if m == key:
+                                if getattr(cls, n) == value:
+                                    class_list.append(y)
+        return class_list
                 
         

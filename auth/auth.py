@@ -42,5 +42,5 @@ class Auth:
         headers = await self.get_request_header(request)
         return headers.get("Authorization", None)
     
-    def current_user(self, request=None) -> TypeVar('User'):
+    async def current_user(self, request=None) -> TypeVar('User'):
         return None

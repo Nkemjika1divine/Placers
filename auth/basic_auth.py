@@ -52,8 +52,10 @@ class BasicAuth(Auth):
         if type(user_pwd) is not str or type(user_email) is not str:
             return None
         try:
-            user = User.search({'email': user_email})
+            print("Searhing for email")
+            user = User.search({'name': user_email})
         except KeyError:
+            print("key error")
             return None
         if not user:
             return None
@@ -61,12 +63,13 @@ class BasicAuth(Auth):
         for key in user:
             count += 1
             if user[key].is_valid_password(user_pwd):
+                print("Password not valid")
                 return None
             if count == 1:
                 break
         return user[key]
     
-    def current_user(self, request=None) -> TypeVar('User'):
+    async def current_user(self, request=None) -> TypeVar('User'):
         """Returns the current user"""
         auth = self.authorization_header(request)
         extract = self.get_base64_authorization_header(auth)

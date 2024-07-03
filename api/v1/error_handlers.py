@@ -4,7 +4,7 @@ from typing import Any, Dict
 from typing_extensions import Annotated, Doc
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
-from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 
 class Unauthorized(HTTPException):
@@ -17,3 +17,8 @@ class Forbidden(HTTPException):
     """Handles Forbidden access"""
     def __init__(self) -> None:
         super().__init__(status_code=HTTP_403_FORBIDDEN, detail={"error": "Forbidden"})
+
+class Not_Found(HTTPException):
+    """Handles Not found error"""
+    def __init__(self) -> None:
+        super().__init__(status_code=HTTP_404_NOT_FOUND, detail={"error": "Not Found"})

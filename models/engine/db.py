@@ -34,6 +34,10 @@ class DB:
         PLACERS_USER = environ.get("PLACERS_USER")
         PLACERS_PWD = environ.get("PLACERS_PWD")
         PLACERS_HOST = environ.get("PLACERS_HOST")
+
+        if not all([PLACERS_DB, PLACERS_PORT, PLACERS_USER, PLACERS_PWD, PLACERS_HOST]):
+            raise ValueError("One or more environment variables are missing")
+        
         self.__engine = create_engine(
             "mysql+mysqlconnector://{}:{}@{}:{}/{}".format(PLACERS_USER,
                                                            PLACERS_PWD,
@@ -94,3 +98,5 @@ class DB:
         else:
             count = len(storage.all(cls))
         return count
+    
+    def get(self, obj, parameter: str = None)
