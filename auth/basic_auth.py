@@ -45,6 +45,7 @@ class BasicAuth(Auth):
     
     def user_object_from_credentials(self, user_email: str, user_pwd: str) -> TypeVar('User'):
         """Extracts the user object from the credentials"""
+        from models import storage
         if not user_email:
             return None
         if not user_pwd:
@@ -53,21 +54,15 @@ class BasicAuth(Auth):
             return None
         try:
             print("Searhing for email")
-            user = User.search({'name': user_email})
+            user = storage.search_key_value(classname="User", key="email", value=user_email)
         except KeyError:
             print("key error")
             return None
         if not user:
             return None
-        count = 0
-        for key in user:
-            count += 1
-            if user[key].is_valid_password(user_pwd):
-                print("Password not valid")
-                return None
-            if count == 1:
-                break
-        return user[key]
+        if not user[0].is_valid_password(user_pwd):
+            return None
+        return user[0]
     
     async def current_user(self, request=None) -> TypeVar('User'):
         """Returns the current user"""

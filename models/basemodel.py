@@ -60,32 +60,5 @@ class BaseModel:
         from models import storage
         """delete the current instance from the storage"""
         storage.delete(self)
-    
-    @classmethod
-    def search(cls, key_values: dict = {}) -> List[TypeVar('BaseModel')]:
-        """Searches and returns all objects with matching attributes"""
-        from models import storage
-        class_name = cls.__name__
-        all_data = storage.all(class_name)
-        class_list = []
-        if len(key_values) == 0:
-            if all_data:
-                for key, value in all_data.items():
-                    class_list.append(value)
-                return class_list
-        for key, value in key_values.items():
-            print("checking attribute of key")
-            print(f"{cls} {type(key)} {value}")
-            getattr_val = getattr(cls, key, "unknown")
-            print(getattr_val)
-            if getattr_val == value:
-                print("attribute of key = value")
-                if all_data:
-                    for x, y in all_data.items():
-                        for m, n in y.__dict__.items():
-                            if m == key:
-                                if getattr(cls, n) == value:
-                                    class_list.append(y)
-        return class_list
                 
         

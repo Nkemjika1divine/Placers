@@ -8,7 +8,7 @@ from models.user import User
 from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from typing import Dict
+from typing import Dict, TypeVar, List
 
 load_dotenv()
 
@@ -98,3 +98,19 @@ class DB:
         else:
             count = len(storage.all(cls))
         return count
+    
+    def search_key_value(classname: str = None, key: str = None, value: str = None) -> TypeVar('BaseModel'):
+        """Search the database for a value based on the key"""
+        from models import storage
+        if not key or not value:
+            return []
+        if type(key) is not str or type(value) is not str:
+            return []
+        list_of_objs = []
+        all_data = storage.all(classname)
+        for obj_value in all_data.values():
+            value_dict = obj_value.to_dict()
+            if key in value_dict:
+                if value_dict[key] == value:
+                    list_of_objs.append(obj_value)
+        return list_of_objs
