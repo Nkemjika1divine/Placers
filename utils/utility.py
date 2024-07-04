@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 """Utility module"""
-from fastapi import Request, Depends
+import re
 
 
-async def get_request_header(request: Request):
-    """Accesses header in the user's request"""
-    if request:
-        return request.headers
-    else:
-        print("Nothing in request")
-        return
+def check_if_word_exists(word: str = None, sentence: str = None) -> bool:
+    """Uses regex to check if a word exists in another string"""
+    if not word or not sentence:
+        return False
+    
+    pattern = re.compile(re.escape(word), re.IGNORECASE)
+    if pattern.search(sentence):
+        return True
+    return False
