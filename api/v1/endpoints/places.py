@@ -23,4 +23,13 @@ def get_places():
         all_places[key] = value.to_dict()
     return JSONResponse(content=all_places, status_code=status.HTTP_200_OK)
 
-@place_router
+@place_router.get("/places/<place_id>")
+def get_a_user(place_id: str = None) -> str:
+    """GET request for a particular place"""
+    if not place_id:
+        raise Not_Found()
+    data = storage.all("Place")
+    for value in data.values():
+        if value.id == place_id:
+            return JSONResponse(content=value.to_json(), status_code=status.HTTP_200_OK)
+    raise Not_Found()
