@@ -23,7 +23,7 @@ def get_users():
     return JSONResponse(content=all_users, status_code=status.HTTP_200_OK)
 
 
-@user_router.get("/users/<user_id")
+@user_router.get("/users/<user_id>")
 def get_a_user(user_id: str = None) -> str:
     """GET request for a particular user"""
     if not user_id:
