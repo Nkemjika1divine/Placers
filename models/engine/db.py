@@ -98,5 +98,3 @@ class DB:
         else:
             count = len(storage.all(cls))
         return count
-    
-    def get(self, obj, parameter: str = None)
