@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """The /users endpoint module"""
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
-from api.v1.error_handlers import Unauthorized, Forbidden, Not_Found, Bad_Request
+from api.v1.error_handlers import Not_Found, Bad_Request
 from models.user import User
 from models import storage
 
@@ -15,6 +15,8 @@ def get_users():
     """GET /api/v1/users
       - Returns all the users in the database"""
     users = storage.all("User")
+    if not users:
+        raise Not_Found()
     all_users = {}
     for key, value in users:
         all_users[key] = value.to_dict()
