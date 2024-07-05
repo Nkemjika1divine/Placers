@@ -4,6 +4,7 @@ import os
 from api.v1.endpoints.index import index_router
 from api.v1.endpoints.users import user_router
 from api.v1.endpoints.places import place_router
+from api.v1.endpoints.session_auth import session_router
 from api.v1.error_handlers import Unauthorized, Forbidden
 from auth.middleware.middleware import AuthMiddleware
 from dotenv import load_dotenv
@@ -19,6 +20,7 @@ api_prefix = "/api/v1"
 app.include_router(index_router, prefix=api_prefix)
 app.include_router(user_router, prefix=api_prefix)
 app.include_router(place_router, prefix=api_prefix)
+app.include_router(session_router, prefix=api_prefix)
 
 path_list = ['/api/v1/status*',
              '/api/v1/forbidden*',

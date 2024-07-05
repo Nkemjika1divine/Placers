@@ -99,7 +99,7 @@ class DB:
             count = len(storage.all(cls))
         return count
     
-    def search_key_value(classname: str = None, key: str = None, value: str = None) -> TypeVar('BaseModel'):
+    def search_key_value(classname: str = None, key: str = None, value: str = None) -> List[TypeVar('BaseModel')]:
         """Search the database for a value based on the key"""
         from models import storage
         if not key or not value:
