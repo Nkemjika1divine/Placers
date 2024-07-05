@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Module for session authentication"""
-from typing import Coroutine, TypeVar
+from fastapi import Request
 from auth.auth import Auth
 from uuid import uuid4
 
@@ -22,5 +22,14 @@ class SessionAuth(Auth):
         if session_id is None or type(session_id) is not str:
             return None
         return self.user_id_by_session_id.get(session_id, None)
+    
+    def current_user(self, request: Request):
+        """Returns a user instanc based on cookie value"""
+        from models import storage
+        if not request:
+            return None
+        session_id = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(session_id)
+        return storage.get_user(user_id)
     
     
