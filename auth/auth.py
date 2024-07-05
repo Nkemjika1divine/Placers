@@ -1,7 +1,12 @@
 #!/usr/bin/python3
 """Basic authentication module"""
+from dotenv import load_dotenv
 from fastapi import Header, HTTPException, Request, Depends
+from os import environ
 from typing import Dict, List, TypeVar
+
+
+load_dotenv()
 
 
 class Auth:
@@ -44,3 +49,10 @@ class Auth:
     
     async def current_user(self, request=None) -> TypeVar('User'):
         return None
+    
+    def session_cookie(self, request: Request):
+        """Returns a cookie value from a request"""
+        if not request:
+            return None
+        my_session_id = environ.get("SESSION_NAME", None)
+        return request.cookies.get(my_session_id)
