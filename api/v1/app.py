@@ -20,7 +20,11 @@ app.include_router(index_router, prefix=api_prefix)
 app.include_router(user_router, prefix=api_prefix)
 app.include_router(place_router, prefix=api_prefix)
 
-path_list = ['/api/v1/status*', '/api/v1/forbidden*', '/api/v1/unauthorized*', '/docs']
+path_list = ['/api/v1/status*',
+             '/api/v1/forbidden*',
+             '/api/v1/unauthorized*',
+             '/docs',
+             '/api/v1/auth_session/login']
 
 
 app.add_middleware(

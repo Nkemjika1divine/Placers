@@ -114,3 +114,16 @@ class DB:
                 if value_dict[key] == value:
                     list_of_objs.append(obj_value)
         return list_of_objs
+    
+    def get_user(user_id: str = None) -> TypeVar("User"):
+        """Gets a user based on an attribute"""
+        from models import storage
+        if not user_id:
+            return None
+        all_users = storage.all("User")
+        if not all_users:
+            return None
+        for user in all_users.values():
+            if user.id == user_id:
+                return user
+        return None

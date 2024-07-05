@@ -50,7 +50,7 @@ class Auth:
     async def current_user(self, request=None) -> TypeVar('User'):
         return None
     
-    def session_cookie(self, request: Request):
+    async def session_cookie(self, request: Request):
         """Returns a cookie value from a request"""
         if not request:
             return None
