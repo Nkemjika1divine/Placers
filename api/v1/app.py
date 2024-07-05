@@ -65,6 +65,9 @@ elif os.environ.get("AUTH_TYPE") == 'basic_auth':
 elif os.environ.get("AUTH_TYPE") == 'session_auth':
     from auth.session_auth import SessionAuth
     auth = SessionAuth()
+elif os.environ.get("AUTH_TYPE") == 'session_exp_auth':
+    from auth.session_exp_auth import SessionExpAuth
+    auth = SessionExpAuth()
 
 if auth:
     app.add_middleware(AuthMiddleware, auth=auth, excluded_paths=path_list)
