@@ -25,9 +25,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 authorization = await self.auth.authorization_header(request)
                 if not authorization:
                     raise Unauthorized()
-                current_user = await self.auth.current_user()
+                current_user = await self.auth.current_user(request)
                 if not current_user:
                     raise Forbidden()
+                request.state.current_user = current_user
             response = await call_next(request)
         except Unauthorized as e:
             return JSONResponse(

@@ -24,10 +24,14 @@ def get_users():
 
 
 @user_router.get("/users/<user_id>")
-def get_a_user(user_id: str = None) -> str:
+def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
     if not user_id:
         raise Not_Found()
+    if user_id == 'me':
+        if not request.state.current_user:
+            raise Not_Found()
+        return JSONResponse(content=request.state.current_user.to_dict(), status_code=status.HTTP_200_OK)
     data = storage.all("User")
     for key, value in data:
         if value.id == user_id:
@@ -78,14 +82,14 @@ async def create_a_user(request: Request) -> str:
 
 
 @user_router.put("/users/<user_id>")
-def edit_user_info(request: Request, user_id: str = None) -> str:
+async def edit_user_info(request: Request, user_id: str = None) -> str:
     """PUT method for editing user info"""
     if not user_id:
         raise Not_Found()
     all_users = storage.all("User")
     if not all_users:
         return Not_Found()
-    user_data = request.json()
+    user_data = await request.json()
     if not user_data:
         raise Bad_Request()
     for user in all_users.values():
