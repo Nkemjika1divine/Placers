@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Module for session authentication endpoints"""
 from dotenv import load_dotenv
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, status
 from api.v1.error_handlers import *
 from os import environ
 
@@ -12,7 +12,7 @@ load_dotenv()
 session_router = APIRouter()
 
 
-@session_router.post("/auth_session/login")
+@session_router.post("/session/login")
 async def login(request: Request) -> str:
     """Handles Login operations"""
     from api.v1.app import auth
@@ -41,3 +41,11 @@ async def login(request: Request) -> str:
     response = JSONResponse(user[0].to_dict())
     response.set_cookie(key=environ.get("SESSION_NAME"), value=session_id)
     return response
+
+@session_router.delete("/session/logout")
+async def logout(request: Request):
+    """Logs out a user by deleting the user's session"""
+    from api.v1.app import auth
+    if not auth.destroy_session(request):
+        raise Not_Found("User not found")
+    return JSONResponse(content={}, status_code=status.HTTP_200_OK)
