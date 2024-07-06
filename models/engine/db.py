@@ -50,6 +50,17 @@ class DB:
             except Exception:
                 print("There is no table in the database")
     
+    def update(self, classname: str, obj_id: str, **kwargs: Dict[str, str]) -> None:
+        """Updates an object based on parameters passed"""
+        from models import storage
+        all_data = storage.all(classname)
+        for value in all_data.values():
+            if value.id == obj_id:
+                for j, k in kwargs.items():
+                    if hasattr(classes[classname], k):
+                        raise ValueError()
+                    setattr(value, j, k)
+    
     def all(self, cls=None) -> Dict[str, any]:
         """query on the current database session"""
         result = {}
@@ -68,6 +79,12 @@ class DB:
     
     def new(self, obj) -> None:
         """add an object to the database"""
+        from models.user import User
+        if obj.__class__.__name__ == "User":
+            hashed = obj.hash_password(obj.password)
+            if not hashed:
+                raise ValueError()
+            setattr(obj, "password", hashed)
         self.__session.add(obj)
 
     def save(self) -> None:

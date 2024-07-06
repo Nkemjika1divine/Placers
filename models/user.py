@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """The User module"""
 from models.basemodel import BaseModel, Base
+from bcrypt import hashpw, checkpw, gensalt
 from sqlalchemy import Column, String
 from sqlalchemy.ext.hybrid import hybrid_property
 import base64
@@ -15,41 +16,28 @@ class User(BaseModel, Base):
     name = Column(String(50), nullable=False)
     username = Column(String(20), nullable=False, unique=True)
     email = Column(String(50), nullable=False, unique=True)
-    _hashed_password = Column("hashed_password", String(250), nullable=False)
+    password = Column(String(250), nullable=False)
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
-    @hybrid_property
-    def hashed_password(self) -> str:
-        """ Getter of the password"""
-        return self._hashed_password
-
-    @hashed_password.setter
-    def hashed_assword(self, password: str = None):
-        """Hashes the password and returns the hashed version"""
-        if password is None or type(password) is not str:
-            raise ValueError("Password must be a string")
-        self._hashed_password = self.hash_password(password)
 
     def hash_password(self, password: str = None) -> str:
         """Hashes a user's password"""
         if not password or type(password) is not str:
             return None
-        """return base64.b64encode(password.encode('utf-8')).decode("utf-8")"""
-        return hashlib.sha256(password.encode()).hexdigest().lower()
+        return hashpw(password.encode("utf8"), gensalt())
     
     def is_valid_password(self, password: str = None) -> bool:
         """Verifies to ensure that password entered is the same in the DB"""
         if not password or type(password) is not str:
             return False
-        if self._hashed_password is None:
+        if self.password is None:
             return False
         password_e = password.encode()
         """return base64.b64encode(password.encode('utf-8')).decode("utf-8") == self._hashed_password"""
-        return hashlib.sha256(password_e).hexdigest().lower() == self._hashed_password
+        return hashlib.sha256(password_e).hexdigest().lower() == self.password
     
     def display_name(self) -> str:
         """ Display User name based on email/first_name/last_name

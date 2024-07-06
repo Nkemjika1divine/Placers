@@ -24,21 +24,33 @@ async def create_account(request: Request):
         request_body = await request.json()
     except Exception as error:
         raise Bad_Request(error)
+    
     name = request_body.get("name", None)
     username = request_body.get("username")
     if not username:
         raise Bad_Request("Username required")
+    existing_user = storage.search_key_value("User", "username", username)
+    if existing_user:
+        raise Forbidden("Username taken")
+    
     email = request_body.get("email", None)
-    hashed_password = request_body.get("password", None)
     if not email:
         raise Bad_Request("Email required")
-    if not hashed_password:
+    existing_user = storage.search_key_value("User", "email", email)
+    if existing_user:
+        raise Forbidden("Email already registered")
+    
+    password = request_body.get("password", None)
+    if not password:
         raise Bad_Request("Password required")
     
-    user = User(name=name, username=username, email=email, _hashed_password=hashed_password)
+    user = User(name=name, username=username, email=email, password=password)
     storage.new(user)
     storage.save()
-    return JSONResponse(content=user.to_dict(), status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content={"message": "User created",
+                                 "User details": {"username": user.username,
+                                                  "email": user.email}},
+                        status_code=status.HTTP_201_CREATED)
     
 
 
