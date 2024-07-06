@@ -35,7 +35,7 @@ async def create_account(request: Request):
     if not hashed_password:
         raise Bad_Request("Password required")
     
-    user = User(name=name, username=username, email=email, hashed_password=hashed_password)
+    user = User(name=name, username=username, email=email, _hashed_password=hashed_password)
     storage.new(user)
     storage.save()
     return JSONResponse(content=user.to_dict(), status_code=status.HTTP_201_CREATED)
