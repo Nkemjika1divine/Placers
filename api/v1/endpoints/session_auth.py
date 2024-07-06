@@ -13,6 +13,36 @@ load_dotenv()
 session_router = APIRouter()
 
 
+@session_router.post("/session/create_account")
+async def create_account(request: Request):
+    """Handles account creation"""
+    from models.user import User
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    try:
+        request_body = await request.json()
+    except Exception as error:
+        raise Bad_Request(error)
+    name = request_body.get("name", None)
+    username = request_body.get("username")
+    if not username:
+        raise Bad_Request("Username required")
+    email = request_body.get("email", None)
+    hashed_password = request_body.get("password", None)
+    if not email:
+        raise Bad_Request("Email required")
+    if not hashed_password:
+        raise Bad_Request("Password required")
+    
+    user = User(name=name, username=username, email=email, hashed_password=hashed_password)
+    storage.new(user)
+    storage.save()
+    return JSONResponse(content=user.to_dict(), status_code=status.HTTP_201_CREATED)
+    
+
+
+
 @session_router.post("/session/login")
 async def login(request: Request) -> str:
     """Handles Login operations"""
@@ -46,7 +76,7 @@ async def login(request: Request) -> str:
     return response
 
 @session_router.delete("/session/logout")
-async def logout(request: Request):
+def logout(request: Request):
     """Logs out a user by deleting the user's session"""
     from api.v1.app import auth
     if not auth.destroy_session(request):
