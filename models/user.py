@@ -35,7 +35,6 @@ class User(BaseModel, Base):
             return False
         if self.password is None:
             return False
-        print(checkpw(password.encode("utf-8"), self.password.encode("utf-8")))
         return checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
     
     def display_name(self) -> str:
