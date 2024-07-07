@@ -35,9 +35,7 @@ class User(BaseModel, Base):
             return False
         if self.password is None:
             return False
-        password_e = password.encode()
-        """return base64.b64encode(password.encode('utf-8')).decode("utf-8") == self._hashed_password"""
-        return hashlib.sha256(password_e).hexdigest().lower() == self.password
+        return checkpw(password.encode("utf-8"), self.password)
     
     def display_name(self) -> str:
         """ Display User name based on email/first_name/last_name

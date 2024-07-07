@@ -87,6 +87,7 @@ async def login(request: Request) -> str:
     response.set_cookie(key=environ.get("SESSION_NAME"), value=session_id, expires=expiry_date)
     return response
 
+
 @session_router.delete("/session/logout")
 def logout(request: Request):
     """Logs out a user by deleting the user's session"""
