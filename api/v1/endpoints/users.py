@@ -75,8 +75,9 @@ async def create_a_user(request: Request) -> str:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
-    request_body = await request.json()
-    if not request_body:
+    try:
+        request_body = await request.json()
+    except Exception:
         raise Bad_Request()
     name = request_body.get("name", None)
     username = request_body.get("username", None)
