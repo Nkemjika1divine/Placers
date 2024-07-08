@@ -40,7 +40,7 @@ def get_a_place(request: Request, place_id: str = None) -> str:
         data = storage.all("Place")
         for value in data.values():
             if value.id == place_id:
-                return JSONResponse(content=value.to_json(), status_code=status.HTTP_200_OK)
+                return JSONResponse(content=value.to_dict(), status_code=status.HTTP_200_OK)
         raise Not_Found()
     raise Unauthorized()
 

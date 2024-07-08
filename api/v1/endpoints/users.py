@@ -26,24 +26,25 @@ def get_users():
 @user_router.get("/users/{user_id}")
 def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
-    """if not user_id:
-        raise Not_Found()"""
-    print("checking user")
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    if not user_id:
+        raise Not_Found()
     if user_id == 'me':
-        print("checking current user")
         if not request.state.current_user:
             raise Not_Found()
         return JSONResponse(content=request.state.current_user.to_dict(), status_code=status.HTTP_200_OK)
-    print("not me")
     data = storage.all("User")
     for key, value in data:
         if value.id == user_id:
-            return JSONResponse(content=value.to_json(), status_code=status.HTTP_200_OK)
+            return JSONResponse(content=value.to_dict(), status_code=status.HTTP_200_OK)
     raise Not_Found()
 
 
 @user_router.delete("/users/{user_id}")
-def delete_user(user_id: str = None) -> str:
+def delete_user(request: Request, user_id: str = None) -> str:
     """DELETE request: Deletes a user"""
     if not user_id:
         raise Not_Found()
@@ -53,7 +54,7 @@ def delete_user(user_id: str = None) -> str:
     for key, value in data.items():
         if value.id == user_id:
             storage.delete(value)
-            return JSONResponse(content={}, status_code=status.HTTP_200_OK),
+            return JSONResponse(content={}, status_code=status.HTTP_200_OK)
     raise Not_Found()
 
 
