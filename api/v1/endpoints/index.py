@@ -50,3 +50,12 @@ def number_of_places(request: Request):
         raise Bad_Request()
     place_count = storage.count("Place")
     return JSONResponse(content={"places": place_count}, status_code=status.HTTP_200_OK)
+
+@index_router.get("/number_of_reviews")
+def number_of_reviews(request: Request):
+    """GET request that returns the number of users in the database"""
+    from models import storage
+    if not request.state.current_user:
+        raise Bad_Request()
+    review_count = storage.count("Review")
+    return JSONResponse(content={"users": review_count}, status_code=status.HTTP_200_OK)
