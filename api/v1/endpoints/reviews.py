@@ -24,3 +24,17 @@ def get_all_reviews(request: Request) -> str:
     return JSONResponse(content=all_reviews, status_code=status.HTTP_200_OK)
 
 
+@review_router.get("/reviews/{review_id}")
+def get_a_review(request: Request, review_id: str = None) -> str:
+    """GET method for retreiving a user"""
+    from models import storage
+    if not request:
+        return Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    review = storage.search_key_value("Review", "id", review_id)
+    if not review:
+        raise Not_Found("This review does not exist")
+    review = review[0]
+    return JSONResponse(content=review.to_dict(), status_code=status.HTTP_200_OK)
+
