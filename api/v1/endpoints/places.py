@@ -83,14 +83,15 @@ async def add_place(request: Request):
     if request.state.current_user:
         user_id = request.state.current_user.id
         try:
-            request_body = request.json()
+            request_body = await request.json()
         except Exception:
             raise Bad_Request()
+        
         name = request_body.get("name", None)
-
         if not name:
             raise Bad_Request("There must be a name for the place")
         category = request_body.get("category", None)
+        description = request_body.get("description", None)
         if not category:
             raise Bad_Request("There must be a category for the place")
         address = request_body.get("address", None)
@@ -111,6 +112,7 @@ async def add_place(request: Request):
         place = Place(creator_id=user_id,
                       name=name,
                       category=category,
+                      description=description,
                       address=address,
                       city=city,
                       state=state,
@@ -122,3 +124,48 @@ async def add_place(request: Request):
         return JSONResponse(content=place.to_dict(), status_code=status.HTTP_201_CREATED)
     raise Unauthorized()
 
+@place_router.put("/places/{place_id}")
+async def edit_place(place_id: str, request: Request) -> str:
+    """PUT method to edit the information of a place"""
+    from models import storage
+    if not place_id:
+        return Not_Found()
+    if not request:
+        return Bad_Request()
+    if request.state.current_user:
+        user_id = request.state.current_user.id
+        # user_role = request.state.current_user.role
+        try:
+            request_body = await request.json()
+        except Exception:
+            raise Bad_Request()
+        
+        place = storage.search_key_value("Place", "id", place_id)
+        if not place:
+            raise Not_Found("Place not found")
+        if user_id != place[0].to_dict()["creator_id"]:
+            if request.state.current_user == "user":
+                raise Unauthorized("You can't perform this action")
+        
+        if "creator_id" in request_body:
+            raise Unauthorized("You are not allowed to change the creator_id")
+        if "name" in request_body:
+            place[0].name = request_body["name"]
+        if "category" in request_body:
+            place[0].category = request_body["category"]
+        if "description" in request_body:
+            place[0].description = request_body["description"]
+        if "address" in request_body:
+            place[0].address = request_body["address"]
+        if "city" in request_body:
+            place[0].city = request_body["city"]
+        if "state" in request_body:
+            place[0].state = request_body["state"]
+        if "country" in request_body:
+            place[0].country = request_body["country"]
+        if "latitude" in request_body:
+            place[0].latitude = request_body["latitude"]
+        if "longitude" in request_body:
+            place[0].longitude = request_body["longitude"]
+        place[0].save()
+        return JSONResponse(content=place[0].to_dict(), status_code=status.HTTP_200_OK)
