@@ -3,7 +3,7 @@
 from fastapi import Request
 from auth.auth import Auth
 from uuid import uuid4
-
+from typing import TypeVar
 
 class SessionAuth(Auth):
     """Handles session authentication"""
@@ -16,6 +16,9 @@ class SessionAuth(Auth):
             return None
         session_id = str(uuid4())
         self.user_id_by_session_id[session_id] = user_id
+        user = storage.get_user(user_id)
+        if user:
+            storage.update("User", user_id, session_id=session_id)
         return session_id
     
     def user_id_for_session_id(self, session_id: str = None) -> str:
@@ -24,7 +27,19 @@ class SessionAuth(Auth):
             return None
         return self.user_id_by_session_id.get(session_id, None)
     
-    def current_user(self, request: Request):
+    def check_db_current_user(self, request: Request) -> TypeVar("User"):
+        """Checks if a request is from a current user in the database"""
+        from models import storage
+        if not request:
+            return None
+        session_id = self.session_cookie(request)
+        all_users = storage.all("User")
+        for values in all_users.values():
+            if values.session_id == session_id:
+                return values
+        return None
+    
+    def current_user(self, request: Request) -> TypeVar("User"):
         """Returns a user instanc based on cookie value"""
         from models import storage
         if not request:
@@ -32,8 +47,6 @@ class SessionAuth(Auth):
         session_id = self.session_cookie(request)
         user_id = self.user_id_for_session_id(session_id)
         user = storage.get_user(user_id)
-        if user:
-            storage.update("User", user_id, session_id=session_id)
         return user
     
     def destroy_session(self, request: Request) -> bool:

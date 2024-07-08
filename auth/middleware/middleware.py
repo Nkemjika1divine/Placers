@@ -22,12 +22,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
         path = request.url.path
         try:
             if self.auth.require_auth(path, self.excluded_paths):
+                session_id = self.auth.session_cookie(request)
+                if session_id:
+                    current_user = self.auth.check_db_current_user(request)
+                    if current_user:
+                        request.state.current_user = current_user
+                        print(request.state.current_user)
+                        return await call_next(request)
                 authorization = await self.auth.authorization_header(request)
                 if not authorization:
                     raise Unauthorized()
-                if not await self.auth.session_cookie(request):
-                    raise Unauthorized()
-                current_user = await self.auth.current_user(request)
+                current_user = self.auth.current_user(request)
                 if not current_user:
                     raise Forbidden()
                 request.state.current_user = current_user

@@ -23,15 +23,18 @@ def get_users():
     return JSONResponse(content=all_users, status_code=status.HTTP_200_OK)
 
 
-@user_router.get("/users/<user_id>")
+@user_router.get("/users/{user_id}")
 def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
-    if not user_id:
-        raise Not_Found()
+    """if not user_id:
+        raise Not_Found()"""
+    print("checking user")
     if user_id == 'me':
+        print("checking current user")
         if not request.state.current_user:
             raise Not_Found()
         return JSONResponse(content=request.state.current_user.to_dict(), status_code=status.HTTP_200_OK)
+    print("not me")
     data = storage.all("User")
     for key, value in data:
         if value.id == user_id:
@@ -39,7 +42,7 @@ def get_a_user(request: Request, user_id: str = None) -> str:
     raise Not_Found()
 
 
-@user_router.delete("/users/<user_id>")
+@user_router.delete("/users/{user_id}")
 def delete_user(user_id: str = None) -> str:
     """DELETE request: Deletes a user"""
     if not user_id:
@@ -81,7 +84,7 @@ async def create_a_user(request: Request) -> str:
     return JSONResponse(content=new_user.to_dict(), status_code=status.HTTP_201_CREATED)
 
 
-@user_router.put("/users/<user_id>")
+@user_router.put("/users/{user_id}")
 async def edit_user_info(request: Request, user_id: str = None) -> str:
     """PUT method for editing user info"""
     if not user_id:

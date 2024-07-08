@@ -25,7 +25,7 @@ def get_places():
     return JSONResponse(content=all_places, status_code=status.HTTP_200_OK)
 
 
-@place_router.get("/places/<place_id>")
+@place_router.get("/places/{place_id}")
 def get_a_place(place_id: str = None) -> str:
     """GET request for a particular place"""
     if not place_id:
@@ -37,7 +37,7 @@ def get_a_place(place_id: str = None) -> str:
     raise Not_Found()
 
 
-@place_router.get("/places/search/<keyword>")
+@place_router.get("/places/search/{keyword}")
 def search_for_a_place(keyword: str = None) -> str:
     """GET request to search for a particular place with a name"""
     if not keyword:
@@ -61,7 +61,7 @@ def search_for_a_place(keyword: str = None) -> str:
     raise Not_Found()
 
 
-@place_router.delete("/places/<place_id>")
+@place_router.delete("/places/{place_id}")
 def delete_a_place(place_id: str = None) -> str:
     """DELETE method that a place"""
     if not place_id:

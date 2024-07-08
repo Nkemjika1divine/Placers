@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Module for session authentication endpoints"""
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from fastapi import APIRouter, Request, status
 from api.v1.error_handlers import *
@@ -83,7 +83,7 @@ async def login(request: Request) -> str:
     session_id = auth.create_session(user[0].id)
     response = JSONResponse(user[0].to_dict())
     # set cookie with an expiry date
-    expiry_date = datetime.now() + timedelta(days=30)
+    expiry_date = datetime.now(timezone.utc) + timedelta(days=30)
     response.set_cookie(key=environ.get("SESSION_NAME"), value=session_id, expires=expiry_date)
     return response
 

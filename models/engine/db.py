@@ -60,6 +60,7 @@ class DB:
                     if hasattr(classes[classname], k):
                         raise ValueError()
                     setattr(value, j, k)
+                self.save()
     
     def all(self, cls=None) -> Dict[str, any]:
         """query on the current database session"""
@@ -132,7 +133,7 @@ class DB:
                     list_of_objs.append(obj_value)
         return list_of_objs
     
-    def get_user(user_id: str = None) -> TypeVar("User"):
+    def get_user(self, user_id: str = None) -> TypeVar("User"):
         """Gets a user based on an attribute"""
         from models import storage
         if not user_id:
