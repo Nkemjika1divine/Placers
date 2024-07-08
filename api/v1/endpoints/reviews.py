@@ -40,7 +40,7 @@ def get_a_review(request: Request, review_id: str = None) -> str:
 
 
 
-@review_router.post("/reviews/{place_id}")
+@review_router.post("/{place_id}/reviews")
 async def add_a_review(request: Request, place_id: str = None) -> str:
     """POST method to add a new route"""
     from models import storage
@@ -71,3 +71,29 @@ async def add_a_review(request: Request, place_id: str = None) -> str:
     storage.new(review)
     storage.save()
     return JSONResponse(content=review.to_dict(), status_code=status.HTTP_201_CREATED)
+
+
+@review_router.put("/reviews/{review_id}")
+async def edit_a_review(request: Request, review_id: str = None) -> str:
+    """PUT method to edit a review"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not review_id:
+        raise Not_Found("Review not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    try:
+        request_body = await request.json()
+    except Exception:
+        raise Bad_Request()
+    review = storage.search_key_value("Review", "id", review_id)
+    if not review:
+        raise Not_Found("Review does not exist")
+    review = review[0]
+    if 'rating' in request_body:
+        review.rating = request_body["rating"]
+    if "full_review" in request_body:
+        review.full_review = request_body["full_review"]
+    review.save()
+    return JSONResponse(content=review.to_dict(), status_code=status.HTTP_200_OK)
