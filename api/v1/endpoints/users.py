@@ -19,7 +19,7 @@ def get_users():
         raise Not_Found()
     all_users = {}
     for key, value in users:
-        all_users[key] = value.to_dict()
+        all_users[key] = value.to_safe_dict()
     return JSONResponse(content=all_users, status_code=status.HTTP_200_OK)
 
 
@@ -35,11 +35,11 @@ def get_a_user(request: Request, user_id: str = None) -> str:
     if user_id == 'me':
         if not request.state.current_user:
             raise Not_Found()
-        return JSONResponse(content=request.state.current_user.to_dict(), status_code=status.HTTP_200_OK)
+        return JSONResponse(content=request.state.current_user.to_safe_dict(), status_code=status.HTTP_200_OK)
     data = storage.all("User")
     for key, value in data:
         if value.id == user_id:
-            return JSONResponse(content=value.to_dict(), status_code=status.HTTP_200_OK)
+            return JSONResponse(content=value.to_safe_dict(), status_code=status.HTTP_200_OK)
     raise Not_Found()
 
 
@@ -82,7 +82,7 @@ async def create_a_user(request: Request) -> str:
     new_user._hashed_password = password
 
     new_user.save()
-    return JSONResponse(content=new_user.to_dict(), status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content=new_user.to_safe_dict(), status_code=status.HTTP_201_CREATED)
 
 
 @user_router.put("/users/{user_id}")
@@ -108,7 +108,7 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
                 user.name = user_data["_hashed_password"]
             
             user.save()
-            return JSONResponse(content=user.to_dict(), status_code=status.HTTP_200_OK)
+            return JSONResponse(content=user.to_safe_dict(), status_code=status.HTTP_200_OK)
     raise Not_Found()
 
 
@@ -123,7 +123,7 @@ def upgrade_user_role(request: Request, user_id: str = None):
     if not request.state.current_user:
         raise Unauthorized()
     current_user = request.state.current_user
-    if current_user.role != "user":
+    if current_user.role == "user":
         raise Unauthorized("You are not authorized to perform this operation")
     updater_id = current_user.id
     user = storage.search_key_value("User", "id", user_id)

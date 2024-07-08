@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Module conntaining index endpoints"""
-from fastapi import APIRouter
+from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
-from api.v1.error_handlers import Unauthorized, Forbidden
+from api.v1.error_handlers import *
 # from starlette.status import HTTP_401_UNAUTHORIZED
 # from api.v1.endpoints.index import index_router
 
@@ -19,7 +19,7 @@ def handle_unauthorized():
 
 
 @index_router.get("/status")
-def status():
+def api_status():
     """Returns the status of the API"""
     return JSONResponse({"status": "ok"})
 
@@ -32,3 +32,12 @@ def unauthorized():
 def forbidden():
     """Raises Error 403 (Forbidden)"""
     raise Forbidden()
+
+@index_router.get("/number_of_users")
+def number_of_users(request: Request):
+    """GET request that returns the number of users in the database"""
+    from models import storage
+    if not request.state.current_user:
+        raise Bad_Request()
+    user_count = storage.count("User")
+    return JSONResponse(content={"users": user_count}, status_code=status.HTTP_200_OK)
