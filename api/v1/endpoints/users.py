@@ -4,16 +4,20 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
-from models import storage
 
 
 user_router = APIRouter()
 
 
 @user_router.get("/users")
-def get_users():
+def get_users(request: Request):
     """GET /api/v1/users
       - Returns all the users in the database"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
     users = storage.all("User")
     if not users:
         raise Not_Found()
@@ -26,6 +30,7 @@ def get_users():
 @user_router.get("/users/{user_id}")
 def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
+    from models import storage
     if not request:
         raise Bad_Request()
     if not request.state.current_user:
@@ -46,6 +51,11 @@ def get_a_user(request: Request, user_id: str = None) -> str:
 @user_router.delete("/users/{user_id}")
 def delete_user(request: Request, user_id: str = None) -> str:
     """DELETE request: Deletes a user"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
     if not user_id:
         raise Not_Found()
     data = storage.all("User")
@@ -61,6 +71,10 @@ def delete_user(request: Request, user_id: str = None) -> str:
 @user_router.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_a_user(request: Request) -> str:
     """POST method for creating a new user"""
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
     request_body = await request.json()
     if not request_body:
         raise Bad_Request()
@@ -88,6 +102,11 @@ async def create_a_user(request: Request) -> str:
 @user_router.put("/users/{user_id}")
 async def edit_user_info(request: Request, user_id: str = None) -> str:
     """PUT method for editing user info"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
     if not user_id:
         raise Not_Found()
     all_users = storage.all("User")
