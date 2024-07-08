@@ -58,4 +58,4 @@ def number_of_reviews(request: Request):
     if not request.state.current_user:
         raise Bad_Request()
     review_count = storage.count("Review")
-    return JSONResponse(content={"users": review_count}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={"reviews": review_count}, status_code=status.HTTP_200_OK)
