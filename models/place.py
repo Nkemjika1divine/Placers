@@ -25,7 +25,7 @@ class Place(BaseModel, Base):
     category = Column(String(50), nullable=False)
     address = Column(String(250), nullable=False, unique=True)
     city = Column(String(50), nullable=False)
-    state = Column(String(50), nullable=True)
+    state = Column(String(50), nullable=False)
     country = Column(String(50), nullable=False)
     longitude = Column(Float, nullable=True)
     latitude = Column(Float, nullable=True)

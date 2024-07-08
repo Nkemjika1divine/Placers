@@ -72,5 +72,53 @@ def delete_a_place(place_id: str = None) -> str:
     for value in data.values():
         if value.id == place_id:
             storage.delete(value)
-            return JSONResponse(content={}, status_code=status.HTTP_200_OK),
+            return JSONResponse(content={}, status_code=status.HTTP_200_OK)
     raise Not_Found()
+
+@place_router.post("/places")
+async def add_place(request: Request):
+    """Adds a new place to the database"""
+    if not request:
+        return Bad_Request()
+    if request.state.current_user:
+        user_id = request.state.current_user.id
+        try:
+            request_body = request.json()
+        except Exception:
+            raise Bad_Request()
+        name = request_body.get("name", None)
+
+        if not name:
+            raise Bad_Request("There must be a name for the place")
+        category = request_body.get("category", None)
+        if not category:
+            raise Bad_Request("There must be a category for the place")
+        address = request_body.get("address", None)
+        if not address:
+            raise Bad_Request("There must be an address for the place")
+        city = request_body.get("city", None)
+        if not city:
+            raise Bad_Request("There must be a city for the place")
+        state = request_body.get("state", None)
+        if not state:
+            raise Bad_Request("There must be a state for the place")
+        country = request_body.get("country", None)
+        if not country:
+            raise Bad_Request("There must be a country for the place")
+        latitude = request.get("latitude", None)
+        longitude = request.get("longitude", None)
+
+        place = Place(creator_id=user_id,
+                      name=name,
+                      category=category,
+                      address=address,
+                      city=city,
+                      state=state,
+                      country=country,
+                      latitude=latitude,
+                      longitude=longitude)
+        storage.new(place)
+        storage.save()
+        return JSONResponse(content=place.to_dict(), status_code=status.HTTP_201_CREATED)
+    raise Unauthorized()
+

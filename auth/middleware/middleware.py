@@ -27,7 +27,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     current_user = self.auth.check_db_current_user(request)
                     if current_user:
                         request.state.current_user = current_user
-                        print(request.state.current_user)
                         return await call_next(request)
                 authorization = await self.auth.authorization_header(request)
                 if not authorization:

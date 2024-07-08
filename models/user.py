@@ -17,6 +17,7 @@ class User(BaseModel, Base):
     username = Column(String(20), nullable=False, unique=True)
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
+    role = Column(String(20), nullable=False, default="user")
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
 
