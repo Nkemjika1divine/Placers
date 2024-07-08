@@ -2,7 +2,7 @@
 """The User module"""
 from models.basemodel import BaseModel, Base
 from bcrypt import hashpw, checkpw, gensalt
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.ext.hybrid import hybrid_property
 import base64
 import hashlib
@@ -18,6 +18,7 @@ class User(BaseModel, Base):
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
     role = Column(String(20), nullable=False, default="user")
+    role_updater = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
 
@@ -39,7 +40,7 @@ class User(BaseModel, Base):
         return checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
     
     def display_name(self) -> str:
-        """ Display User name based on email/first_name/last_name
+        """ Display User name based on email/username/
         """
         if self.email is None and self.username is None:
             return ""

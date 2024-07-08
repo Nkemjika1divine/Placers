@@ -2,7 +2,7 @@
 """The /users endpoint module"""
 from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
-from api.v1.error_handlers import Not_Found, Bad_Request
+from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
 from models import storage
 
@@ -109,3 +109,28 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
             user.save()
             return JSONResponse(content=user.to_dict(), status_code=status.HTTP_200_OK)
     raise Not_Found()
+
+
+@user_router.put("/users/upgrade_role/{user_id}")
+def upgrade_user_role(request: Request, user_id: str = None):
+    """PUT method for upgrading a user to admin"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not user_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    current_user = request.state.current_user
+    if current_user.role != "user":
+        raise Unauthorized("You are not authorized to perform this operation")
+    updater_id = current_user.id
+    user = storage.search_key_value("User", "id", user_id)
+    if not user:
+        raise Not_Found("User does not exist")
+    user = user[0]
+    user.role = "admin"
+    user.role_updater = updater_id
+    user.save()
+    return JSONResponse(content={"Message": "{} upgraded to admin".format(user.display_name())}, status_code=status.HTTP_200_OK)
+    
