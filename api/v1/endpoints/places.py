@@ -218,3 +218,24 @@ def get_place_average_rating(request: Request, place_id: str = None) -> str:
 
 @place_router.get("/places/all_reviews/{place_id}")
 def get_all_reviews_of_place(request: Request, place_id: str = None) -> str:
+    """GET method to retrieve all reviews of a place"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not place_id:
+        raise Not_Found("Place not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    place = storage.search_key_value("Place", "id", place_id)
+    if not place:
+        raise Not_Found("Place not found")
+    reviews = storage.search_key_value("Review", "place_id", place_id)
+    if not reviews:
+        return JSONResponse(content={"message": "No reviews for this place"}, status_code=status.HTTP_404_NOT_FOUND)
+    review_list = []
+    for review in reviews:
+        review_json = review.to_dict()
+        review_json["reviewer"] = storage.search_key_value("User", "id", review.user_id)[0].display_name()
+        del review_json["user_id"]
+        review_list.append(review_json)
+    return JSONResponse(content=review_json, status_code=status.HTTP_200_OK)
