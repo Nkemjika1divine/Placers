@@ -91,6 +91,8 @@ async def edit_a_review(request: Request, review_id: str = None) -> str:
     if not review:
         raise Not_Found("Review does not exist")
     review = review[0]
+    if review.user_id != request.state.current_user.id:
+        raise Unauthorized("You are not allowed to perform this operation")
     if 'rating' in request_body:
         if type(request_body["rating"]) is not int or request_body["rating"] > 10 or request_body["rating"] < 0:
             raise Unauthorized("Rating must be a whole number from 0 to 10")
@@ -115,6 +117,9 @@ def delete_a_review(request: Request, review_id: str = None) -> str:
     if not review:
         raise Not_Found("Review not found")
     review = review[0]
+    if review.user_id != request.state.current_user.id:
+        if request.state.current_user.role is not 'admin' or request.state.current_user.role is not 'superuser':
+            raise Unauthorized("You are not allowed to perform this operation")
     storage.delete(review)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 

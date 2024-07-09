@@ -19,6 +19,8 @@ class User(BaseModel, Base):
     role_updater = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
+    email_verified = Column(String(10), nullable=False, default="no")
+    barred = Column(String(10), nullable=False, default="no")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,11 +70,9 @@ class User(BaseModel, Base):
         storage.update("User", user.id, password=self.hash_password(password), reset_token=None)
 
     
-    def send_email_token(self, email: str = None) -> bool:
+    def send_email_token(self) -> bool:
         """sends token to the user email"""
         from models import storage
-        if not email or type(email) is not str:
-            return False
         try:
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()

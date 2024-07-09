@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
-from utils.utility import sort_dict_by_values, check_if_word_exists
+from utils.utility import sort_dict_by_values, check_if_word_exists, validate_email_pattern
 
 
 user_router = APIRouter()
@@ -35,7 +35,11 @@ async def verify_email_token(request: Request) -> str:
         raise Bad_Request()
     if 'reset_token' not in request_body:
         raise Not_Found("token required")
-    if request.state.current_user.reset_token == request_body["reset_token"]:
+    user = request.state.current_user
+    if user.reset_token == request_body["reset_token"]:
+        user.reset_token = None
+        user.email_verified = "yes"
+        user.save()
         return JSONResponse(content="Email validated", status_code=status.HTTP_200_OK)
     raise Unauthorized()
 
@@ -128,8 +132,8 @@ async def create_a_user(request: Request) -> str:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
-    if request.state.current_user.role == 'user':
-        raise Unauthorized("This is reserved for admins and the superuser only")
+    if request.state.current_user.role != 'superuser':
+        raise Unauthorized("This is reserved for the superuser only")
     try:
         request_body = await request.json()
     except Exception:
@@ -143,9 +147,11 @@ async def create_a_user(request: Request) -> str:
     email = request_body.get("email", None)
     if not email:
         raise Bad_Request(detail="Email missing")
+    if not validate_email_pattern(email):
+        raise Unauthorized("Enter a valid email")
     if storage.search_key_value("User", "email", email):
         raise Unauthorized("Email already registered")
-    password = request_body.get("hashed_password", None)
+    password = request_body.get("password", None)
     if not password:
         raise Bad_Request(detail="Password missing")
     
@@ -169,8 +175,8 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
         raise Unauthorized()
     if not user_id:
         raise Not_Found()
-    if request.state.current_user.role == 'user':
-        raise Unauthorized("This is reserved for admins and the superuser only")
+    if request.state.current_user.role != 'superuser':
+        raise Unauthorized("This is reserved for the superuser only")
     all_users = storage.all("User")
     if not all_users:
         return Not_Found()
@@ -182,11 +188,13 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
             if "name" in user_data:
                 user.name = user_data["name"]
             if "username" in user_data:
-                user.name = user_data["username"]
+                if storage.search_key_value("User", "username", user_data["username"]):
+                    raise Unauthorized("Username already taken")
+                user.username = user_data["username"]
             if "email" in user_data:
-                user.name = user_data["email"]
-            if "_hashed_password" in user_data:
-                user.name = user_data["_hashed_password"]
+                raise Unauthorized("You are not allowed to change a user's email")
+            if "password" in user_data:
+                raise Unauthorized("You are not allowed to change a user's password")
             
             user.save()
             return JSONResponse(content=user.to_safe_dict(), status_code=status.HTTP_200_OK)
@@ -284,9 +292,29 @@ def get_user_place_ranking(request: Request, user_id: str = None) -> str:
 
 @user_router.get("/users/profile")
 def user_profile(request: Request) -> str:
-    """Returns the profile of the user"""
+    """GET method that Returns the profile of the user"""
     if not request:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
     return JSONResponse(content=request.state.current_user.to_safe_dict(), status_code=status.HTTP_200_OK)
+
+
+@user_router.put('/profile/update')
+async def profile_update(request: Request) -> str:
+    """PUT method that Updates the user's profile"""
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    user = request.state.current_user
+    try:
+         request_body = await request.json()
+    except Exception:
+        raise Bad_Request()
+    if 'name' in request_body:
+        user.name = request_body['name']
+    if 'username' in request_body:
+        user.username = request_body['username']
+    user.save()
+    return JSONResponse(content="User successfully updated", status_code=status.HTTP_200_OK)
