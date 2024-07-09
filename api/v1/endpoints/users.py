@@ -159,8 +159,22 @@ def upgrade_user_role(request: Request, user_id: str = None):
 @user_router.get("/users/visit_history/{user_id}")
 def get_user_visit_history(request: Request, user_id: str = None) -> str:
     """GET method that returns the user's visit history"""
-
-
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not user_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    visits = storage.search_key_value("Review", "user_id", user_id)
+    if not visits:
+        return JSONResponse(content={"message": "This user is yet to record a visit"}, status_code=status.HTTP_404_NOT_FOUND)
+    visit_list = []
+    for visit in visits:
+        place_id = visit.place_id
+        place = storage.search_key_value("Place", "id", place_id)
+        visit_list.append(place[0].to_dict())
+    return JSONResponse(content=visit_list, status_code=status.HTTP_200_OK)
 
 
 @user_router.get("/users/place_ranking/{user_id}")

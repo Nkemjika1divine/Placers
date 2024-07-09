@@ -92,6 +92,8 @@ async def edit_a_review(request: Request, review_id: str = None) -> str:
         raise Not_Found("Review does not exist")
     review = review[0]
     if 'rating' in request_body:
+        if type(request_body["rating"]) is not int or request_body["rating"] > 10 or request_body["rating"] < 0:
+            raise Unauthorized("Rating must be a whole number from 0 to 10")
         review.rating = request_body["rating"]
     if "full_review" in request_body:
         review.full_review = request_body["full_review"]
