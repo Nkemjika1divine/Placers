@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
-from utils.utility import sort_dict_by_values
+from utils.utility import sort_dict_by_values, check_if_word_exists
 
 
 user_router = APIRouter()
@@ -67,6 +67,27 @@ def delete_user(request: Request, user_id: str = None) -> str:
         if value.id == user_id:
             storage.delete(value)
             return JSONResponse(content={}, status_code=status.HTTP_200_OK)
+    raise Not_Found()
+
+
+@user_router.get("/users/search/{keyword}")
+def search_for_a_user(request: Request, keyword: str = None) -> str:
+    """GET method that searches for a user based on the keyword provided"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not keyword:
+        raise Not_Found("No keyword entered")
+    if not request.state.current_user:
+        raise Unauthorized()
+    user_list = []
+    data = storage.all("User")
+    for value in data.values():
+        if check_if_word_exists(keyword, value.name):
+            user_list.append(value.to_dict())
+        elif check_if_word_exists(keyword, value.username):
+            user_list.append(value.to_dict())
+        return JSONResponse(content=user_list, status_code=status.HTTP_200_OK)
     raise Not_Found()
 
 
