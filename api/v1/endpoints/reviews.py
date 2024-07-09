@@ -97,3 +97,21 @@ async def edit_a_review(request: Request, review_id: str = None) -> str:
         review.full_review = request_body["full_review"]
     review.save()
     return JSONResponse(content=review.to_dict(), status_code=status.HTTP_200_OK)
+
+
+@review_router.delete("/reviews/{review_id}")
+def delete_a_review(request: Request, review_id: str = None) -> str:
+    """DELETE method to delete a review"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not review_id:
+        raise Not_Found("Review not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    review = storage.search_key_value("Review", "id", review_id)
+    if not review:
+        raise Not_Found("Review not found")
+    review = review[0]
+    storage.delete(review)
+    return JSONResponse(content={}, status_code=status.HTTP_200_OK)
