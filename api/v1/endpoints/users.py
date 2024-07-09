@@ -98,6 +98,8 @@ async def create_a_user(request: Request) -> str:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
+    if request.state.current_user.role == 'user':
+        raise Unauthorized("You are not allowed to create a user")
     try:
         request_body = await request.json()
     except Exception:

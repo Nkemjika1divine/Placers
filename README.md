@@ -19,15 +19,24 @@ Start the application by running `python start.py`
 ## API Routes
 API routes include:
 
+### Status:
+- `GET /api/v1/status`: This returns the status and the version of the API.
+
 ### Authentication:
 - `POST /api/v1/session/create_account`: This helps the user to create an account on the application
 - `POST /api/v1/session/login`: This helps thte user to log into the application
 - `DELETE /api/v1/session/logout`: This helps the user to logout of the application
 
-### Stats
+### Stats:
 - `GET /api/v1/number_of_users`: Retrieves the number of users in the application
 - `GET /api/v1/number_of_places`: Retrieves the number of places in the application
 - `GET /api/v1/number_of_reviews`: Retrieves the number of Reviews in the application
+
+### Users:
+- `GET /api/v1/users`: Returns a collection of all registered users in the application
+- `GET /api/v1/users/{user_id}`: Returns a specific user
+- `GET /api/v1/users/{keyword}`: Returns a collection of users whose username or name match the keyword specified
+- `POST /api/v1/users`: This is used for creating a new user. This is reserved for admins and the superuser only
 
 
 ## Contributing
