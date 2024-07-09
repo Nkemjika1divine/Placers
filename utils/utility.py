@@ -14,6 +14,7 @@ def check_if_word_exists(word: str = None, sentence: str = None) -> bool:
         return True
     return False
 
-def hash_password(password: str) -> bytes:
-    """Takes a password and returns hashed version of it"""
-    return hashpw(password.encode("utf8"), gensalt())
+
+def sort_dict_by_values(dictionary, reverse: bool = True):
+    """Sorts a dictionary by value"""
+    return {keys: values for keys, values in sorted(dictionary.items(), key=lambda item: item[1], reverse=reverse)}

@@ -11,23 +11,23 @@ class Unauthorized(HTTPException):
     """Handles Unauthorized access"""
     def __init__(self, detail: str = None) -> None:
         super().__init__(status_code=HTTP_401_UNAUTHORIZED,
-                         detail=f"error: {detail}" if detail else {"error": "Unauthorized"})
+                         detail=detail if detail else "Unauthorized")
 
 
 class Forbidden(HTTPException):
     """Handles Forbidden access"""
     def __init__(self, detail: str = None) -> None:
         super().__init__(status_code=HTTP_403_FORBIDDEN,
-                         detail=f"error: {detail}" if detail else {"error": "Forbidden"})
+                         detail=detail if detail else "Forbidden")
 
 class Not_Found(HTTPException):
     """Handles Not found error"""
     def __init__(self, detail: str = None) -> None:
         super().__init__(status_code=HTTP_404_NOT_FOUND,
-                         detail=f"error: {detail}" if detail else {"error": "Not Found"})
+                         detail=detail if detail else "Not Found")
 
 class Bad_Request(HTTPException):
     """Handles Bad requests or incomplete request"""
     def __init__(self, detail: str = None) -> None:
         super().__init__(status_code=HTTP_400_BAD_REQUEST,
-                         detail=f"error: {detail}" if detail else {"error": "Incomplete Request"})
+                         detail=detail if detail else "Incomplete Request")

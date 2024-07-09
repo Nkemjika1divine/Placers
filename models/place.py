@@ -24,7 +24,7 @@ class Place(BaseModel, Base):
     recently_updated_by = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
     name = Column(String(50), nullable=False)
     category = Column(String(50), nullable=False)
-    address = Column(String(250), nullable=False, unique=True)
+    address = Column(String(250), nullable=False)
     city = Column(String(50), nullable=False)
     state = Column(String(50), nullable=False)
     country = Column(String(50), nullable=False)

@@ -21,7 +21,7 @@ def get_places(request: Request) -> str:
     if request.state.current_user:
         places = storage.all("Place")
         if not places:
-            raise Not_Found()
+            raise Not_Found("No place in the database yet")
         all_places = {}
         for key, value in places:
             all_places[key] = value.to_dict()
@@ -99,6 +99,8 @@ async def add_place(request: Request):
     if not request:
         return Bad_Request()
     if request.state.current_user:
+        if request.state.current_user.role == 'user':
+            raise Unauthorized("You are not authorized to perform this operation")
         user_id = request.state.current_user.id
         try:
             request_body = await request.json()

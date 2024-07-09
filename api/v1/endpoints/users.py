@@ -70,6 +70,7 @@ def delete_user(request: Request, user_id: str = None) -> str:
 
 @user_router.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_a_user(request: Request) -> str:
+    from models import storage
     """POST method for creating a new user"""
     if not request:
         raise Bad_Request()
@@ -82,13 +83,17 @@ async def create_a_user(request: Request) -> str:
     name = request_body.get("name", None)
     username = request_body.get("username", None)
     if not username:
-        raise Bad_Request(detail={"error": "Username missing"})
+        raise Bad_Request(detail="Username missing")
+    if storage.search_key_value("User", "username", username):
+        raise Unauthorized("Username taken")
     email = request_body.get("email", None)
     if not email:
-        raise Bad_Request(detail={"error": "Email missing"})
+        raise Bad_Request(detail="Email missing")
+    if storage.search_key_value("User", "email", email):
+        raise Unauthorized("Email already registered")
     password = request_body.get("hashed_password", None)
     if not password:
-        raise Bad_Request(detail={"error": "Password missing"})
+        raise Bad_Request(detail="Password missing")
     
     new_user = User()
     new_user.name = name
@@ -177,6 +182,20 @@ def get_user_visit_history(request: Request, user_id: str = None) -> str:
     return JSONResponse(content=visit_list, status_code=status.HTTP_200_OK)
 
 
-@user_router.get("/users/place_ranking/{user_id}")
+"""@user_router.get("/users/place_ranking/{user_id}")
 def get_user_place_ranking(request: Request, user_id: str = None) -> str:
-    """GET method to rank user's ratings of places"""
+    """"GET method to rank user's ratings of places""""""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not user_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    visits = storage.search_key_value("Review", "user_id", user_id)
+    if not visits:
+        return JSONResponse(content={"message": "This user is yet to record a visit"}, status_code=status.HTTP_404_NOT_FOUND)
+    visit_list = {}
+    for visit in visits:
+        visit_list[visit.id] = visit.rating"""
+        
