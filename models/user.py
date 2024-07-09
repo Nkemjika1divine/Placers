@@ -3,8 +3,8 @@
 from models.basemodel import BaseModel, Base
 from bcrypt import hashpw, checkpw, gensalt
 from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.ext.hybrid import hybrid_property
 import re
+from uuid import uuid4
 
 
 class User(BaseModel, Base):
@@ -44,3 +44,32 @@ class User(BaseModel, Base):
             return ""
         else:
             return "{} (@{})".format(self.name, self.username)
+    
+    def generate_password_token(self, user_id: str = None) -> str:
+        """Generated a password token using uuid"""
+        from models import storage
+        if not user_id or type(user_id) is not str:
+            return None
+        user = storage.get_user(user_id)
+        if not user:
+            raise ValueError()
+        token = str(uuid4())
+        storage.update("User", user_id, reset_token=token)
+        return token
+    
+    def update_password(self, token: str = None, password: str = None) -> None:
+        """Updates a user's password"""
+        from models import storage
+        user = storage.search_key_value("User", "reset_token", token)
+        if not user:
+            raise ValueError()
+        user = user[0]
+        storage.update("User", user.id, password=self.hash_password(password), reset_token=None)
+
+    
+    def validate_email(self, email: str = None):
+        """Validates the user email"""
+        from models import storage
+        if not email or type(email) is not str:
+            return False
+        
