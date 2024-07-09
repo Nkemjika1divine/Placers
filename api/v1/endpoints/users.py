@@ -154,4 +154,15 @@ def upgrade_user_role(request: Request, user_id: str = None):
     user.role_updater = updater_id
     user.save()
     return JSONResponse(content={"Message": "{} upgraded to admin".format(user.display_name())}, status_code=status.HTTP_200_OK)
-    
+
+
+@user_router.get("/users/visit_history/{user_id}")
+def get_user_visit_history(request: Request, user_id: str = None) -> str:
+    """GET method that returns the user's visit history"""
+
+
+
+
+@user_router.get("/users/place_ranking/{user_id}")
+def get_user_place_ranking(request: Request, user_id: str = None) -> str:
+    """GET method to rank user's ratings of places"""

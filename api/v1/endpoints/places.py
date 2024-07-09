@@ -190,3 +190,31 @@ async def edit_place(place_id: str, request: Request) -> str:
         place[0].save()
         return JSONResponse(content=place[0].to_dict(), status_code=status.HTTP_200_OK)
     raise Unauthorized()
+
+
+@place_router.get("/places/average_rating/{place_id}")
+def get_place_average_rating(request: Request, place_id: str = None) -> str:
+    """GET method that returns the average rating of a place"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not place_id:
+        raise Not_Found("Place not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    place = storage.search_key_value("Place", "id", place_id)
+    if not place:
+        raise Not_Found("Place not found")
+    reviews = storage.search_key_value("Review", "place_id", place_id)
+    if not reviews:
+        return JSONResponse(content={"message": "No reviews for this place"}, status_code=status.HTTP_404_NOT_FOUND)
+    total = 0
+    for review in reviews:
+        total += review.rating
+    average_rating = total / len(reviews)
+    return JSONResponse(content={"average_rating": average_rating}, status_code=status.HTTP_200_OK)
+
+
+
+@place_router.get("/places/all_reviews/{place_id}")
+def get_all_reviews_of_place(request: Request, place_id: str = None) -> str:
