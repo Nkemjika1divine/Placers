@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Request, status
 from api.v1.error_handlers import *
 from os import environ
+from utils.utility import validate_email_pattern
 
 
 load_dotenv()
@@ -36,6 +37,8 @@ async def create_account(request: Request):
     email = request_body.get("email", None)
     if not email:
         raise Bad_Request("Email required")
+    if not validate_email_pattern(email):
+        raise Forbidden("Wrong email format")
     existing_user = storage.search_key_value("User", "email", email)
     if existing_user:
         raise Forbidden("Email already registered")

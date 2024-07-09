@@ -4,3 +4,4 @@ bcrypt
 python-dotenv
 mysql-connector-python
 uvicorn
+email_validator

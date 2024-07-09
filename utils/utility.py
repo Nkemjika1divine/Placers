@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Utility module"""
-from bcrypt import hashpw, gensalt, checkpw
+import random
 import re
 
 
@@ -26,3 +26,9 @@ def validate_email_pattern(email: str = None) -> bool:
         return False
     pattern = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
     return bool(pattern.match(email))
+
+def generate_token():
+    """Generates a randon 6 digit number and returns it"""
+    otp = ""
+    for i in range(6):
+        otp += random.randint(0, 9)
