@@ -49,6 +49,10 @@ class BaseModel:
         """returns a dictionary without sensitive information"""
         from models import storage
         copy = self.__dict__.copy()
+        if 'time_created' in copy:
+            copy['time_created'] = self.time_created.isoformat()
+        if 'time_updated' in copy:
+            copy['time_updated'] = self.time_updated.isoformat()
         copy['__class__'] = self.__class__.__name__
         if 'password' in copy:
             del copy['password']

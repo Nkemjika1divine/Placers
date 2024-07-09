@@ -39,6 +39,7 @@ class User(BaseModel, Base):
             return False
         return checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
     
+    
     def display_name(self) -> str:
         """ Display User name based on email/username/
         """

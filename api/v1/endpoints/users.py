@@ -20,10 +20,11 @@ def get_users(request: Request):
     if not request.state.current_user:
         raise Unauthorized()
     users = storage.all("User")
+    print(users)
     if not users:
         raise Not_Found()
     all_users = {}
-    for key, value in users:
+    for key, value in users.items():
         all_users[key] = value.to_safe_dict()
     return JSONResponse(content=all_users, status_code=status.HTTP_200_OK)
 
