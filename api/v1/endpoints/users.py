@@ -90,7 +90,7 @@ def search_for_a_user(request: Request, keyword: str = None) -> str:
     raise Not_Found()
 
 
-@user_router.post("/users", status_code=status.HTTP_201_CREATED)
+@user_router.post("/users")
 async def create_a_user(request: Request) -> str:
     from models import storage
     """POST method for creating a new user"""
@@ -99,7 +99,7 @@ async def create_a_user(request: Request) -> str:
     if not request.state.current_user:
         raise Unauthorized()
     if request.state.current_user.role == 'user':
-        raise Unauthorized("You are not allowed to create a user")
+        raise Unauthorized("This is reserved for admins and the superuser only")
     try:
         request_body = await request.json()
     except Exception:
@@ -139,6 +139,8 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
         raise Unauthorized()
     if not user_id:
         raise Not_Found()
+    if request.state.current_user.role == 'user':
+        raise Unauthorized("This is reserved for admins and the superuser only")
     all_users = storage.all("User")
     if not all_users:
         return Not_Found()
@@ -161,7 +163,7 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
     raise Not_Found()
 
 
-@user_router.put("/users/upgrade_role/{user_id}")
+@user_router.put("/users/promote/{user_id}")
 def upgrade_user_role(request: Request, user_id: str = None):
     """PUT method for upgrading a user to admin"""
     from models import storage
@@ -182,7 +184,29 @@ def upgrade_user_role(request: Request, user_id: str = None):
     user.role = "admin"
     user.role_updater = updater_id
     user.save()
-    return JSONResponse(content={"Message": "{} upgraded to admin".format(user.display_name())}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={"Message": "{} promoted to admin successfully".format(user.display_name())}, status_code=status.HTTP_200_OK)
+
+
+@user_router.put("/users/demote/{user_id}")
+def demote_an_admin(request: Request, user_id: str = None) -> str:
+    """PUT method that demotes an admin to a regular user"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not user_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    current_user = request.state.current_user
+    if current_user.role != "superuser":
+        raise Unauthorized("You are not authorized to perform this operation")
+    user = storage.search_key_value("User", "id", user_id)
+    if not user:
+        raise Not_Found("User does not exist")
+    user = user[0]
+    user.role = "user"
+    user.save()
+    return JSONResponse(content={"Message": "{} demoted to user successfully".format(user.display_name())}, status_code=status.HTTP_200_OK)
 
 
 @user_router.get("/users/visit_history/{user_id}")

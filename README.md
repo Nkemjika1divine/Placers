@@ -37,6 +37,12 @@ API routes include:
 - `GET /api/v1/users/{user_id}`: Returns a specific user
 - `GET /api/v1/users/{keyword}`: Returns a collection of users whose username or name match the keyword specified
 - `POST /api/v1/users`: This is used for creating a new user. This is reserved for admins and the superuser only
+- `DELETE /api/v1/users/{user_id}`: This deletes an existing user in the application
+- `PUT /api/v1/users/{user_id}`: This updates the information of a user. This is reserved for admins and the superuser only
+- `PUT /api/v1/users/promote/{user_id}`: This is used to upgrade the role of a user to admin.
+- `GET /api/v1/users/visit_history/{user_id}`: This retrieves the visit history of the user (places the user has visited and rated)
+- `GET /api/v1/users/profile`: This returns the profile of the logged in user
+- `GET /api/v1/users/demote/{user_id}`: This is used to demote an admin to a regular user. It can only be done by the superuser
 
 
 ## Contributing
