@@ -26,6 +26,8 @@ API routes include:
 - `POST /api/v1/session/create_account`: This helps the user to create an account on the application
 - `POST /api/v1/session/login`: This helps thte user to log into the application
 - `DELETE /api/v1/session/logout`: This helps the user to logout of the application
+- `GET /api/v1/users/send_verification_token`: This sends the verification token to the user's email
+
 
 ### Stats:
 - `GET /api/v1/number_of_users`: Retrieves the number of users in the application

@@ -68,7 +68,7 @@ class User(BaseModel, Base):
         storage.update("User", user.id, password=self.hash_password(password), reset_token=None)
 
     
-    def send_email_token(self, email: str = None):
+    def send_email_token(self, email: str = None) -> bool:
         """sends token to the user email"""
         from models import storage
         if not email or type(email) is not str:
@@ -102,4 +102,12 @@ class User(BaseModel, Base):
             print(f"An SMTP error occurred: {e}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
+        return False
+    
+    def verify_token(self, token: str = None) -> bool:
+        """Verifies an email"""
+        if not token or type(token) is not str:
+            return False
+        if token == self.reset_token:
+            return True
         return False

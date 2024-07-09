@@ -10,6 +10,36 @@ from utils.utility import sort_dict_by_values, check_if_word_exists
 user_router = APIRouter()
 
 
+@user_router.get("/users/send_verification_token")
+def send_token_for_email(request: Request) -> str:
+    """GET method for sending verification tokens"""
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    if request.state.current_user.send_email_token():
+        return JSONResponse(content="Email verification token sent", status_code=status.HTTP_200_OK)
+    raise Unauthorized()
+
+
+@user_router.post("/users/verify_token")
+async def verify_email_token(request: Request) -> str:
+    """Checks if the verification token is the same as the one stored"""
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    try:
+        request_body = await request.json()
+    except Exception:
+        raise Bad_Request()
+    if 'reset_token' not in request_body:
+        raise Not_Found("token required")
+    if request.state.current_user.reset_token == request_body["reset_token"]:
+        return JSONResponse(content="Email validated", status_code=status.HTTP_200_OK)
+    raise Unauthorized()
+
+
 @user_router.get("/users")
 def get_users(request: Request):
     """GET /api/v1/users
