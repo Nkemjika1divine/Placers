@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
+from utils.utility import sort_dict_by_values
 
 
 user_router = APIRouter()
@@ -182,9 +183,9 @@ def get_user_visit_history(request: Request, user_id: str = None) -> str:
     return JSONResponse(content=visit_list, status_code=status.HTTP_200_OK)
 
 
-"""@user_router.get("/users/place_ranking/{user_id}")
+@user_router.get("/users/place_ranking/{user_id}")
 def get_user_place_ranking(request: Request, user_id: str = None) -> str:
-    """"GET method to rank user's ratings of places""""""
+    #"""GET method to rank user's ratings of places"""
     from models import storage
     if not request:
         raise Bad_Request()
@@ -197,5 +198,18 @@ def get_user_place_ranking(request: Request, user_id: str = None) -> str:
         return JSONResponse(content={"message": "This user is yet to record a visit"}, status_code=status.HTTP_404_NOT_FOUND)
     visit_list = {}
     for visit in visits:
-        visit_list[visit.id] = visit.rating"""
-        
+        visit_list[visit.id] = visit.rating
+    sorted_visit_list = sort_dict_by_values(visit_list)
+    sorted_places = []
+    for place in sorted_visit_list:
+        sorted_places.append(storage.search_key_value())
+
+
+@user_router.get("/users/profile")
+def user_profile(request: Request) -> str:
+    """Returns the profile of the user"""
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    return JSONResponse(content=request.state.current_user.to_safe_dict(), status_code=status.HTTP_200_OK)
