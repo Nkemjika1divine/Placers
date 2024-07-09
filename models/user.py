@@ -4,10 +4,7 @@ from models.basemodel import BaseModel, Base
 from bcrypt import hashpw, checkpw, gensalt
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.ext.hybrid import hybrid_property
-import base64
-import hashlib
-import hmac
-import os
+import re
 
 
 class User(BaseModel, Base):
