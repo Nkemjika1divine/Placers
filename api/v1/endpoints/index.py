@@ -21,7 +21,7 @@ def handle_unauthorized():
 @index_router.get("/status")
 def api_status():
     """Returns the status of the API"""
-    return JSONResponse({"status": "ok"})
+    return JSONResponse({"status": "ok", "api version": "v1.0.0"}, status_code=status.HTTP_200_OK)
 
 @index_router.get("/unauthorized")
 def unauthorized():
