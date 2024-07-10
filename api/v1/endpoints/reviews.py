@@ -44,6 +44,7 @@ def get_a_review(request: Request, review_id: str = None) -> str:
 async def add_a_review(request: Request, place_id: str = None) -> str:
     """POST method to add a new route"""
     from models import storage
+    print("in post reviews")
     if not place_id:
         return Not_Found("Place does not exist")
     if not request:
@@ -53,7 +54,7 @@ async def add_a_review(request: Request, place_id: str = None) -> str:
     try:
         request_body = await request.json()
     except Exception:
-        raise Bad_Request()
+        raise Bad_Request("Error parsing request")
     
     place = storage.search_key_value("Place", "id", place_id)
     if not place:
