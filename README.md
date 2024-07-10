@@ -74,6 +74,9 @@ He manages the whole application and is in charge of deciding who the admins are
 ### Admins:
 They are the second tier. They are in charge of creating places, managing user activities, regulating activities on the application. they have restrictions when it comes to altering a user's information
 
+### Users:
+They are the regular users. They are not allowed to perform operations like creating places, creating users, but they can add reviews and give a rating to a place.
+
 
 
 ## Contributing

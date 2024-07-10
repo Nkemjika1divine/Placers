@@ -66,6 +66,7 @@ def get_users(request: Request):
 def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
     from models import storage
+    print("In GET userid")
     if not request:
         raise Bad_Request()
     if not request.state.current_user:
@@ -74,13 +75,13 @@ def get_a_user(request: Request, user_id: str = None) -> str:
         raise Not_Found()
     if user_id == 'me':
         if not request.state.current_user:
-            raise Not_Found()
+            raise Unauthorized("You need to log in first")
         return JSONResponse(content=request.state.current_user.to_safe_dict(), status_code=status.HTTP_200_OK)
     data = storage.all("User")
-    for key, value in data:
+    for value in data.values():
         if value.id == user_id:
             return JSONResponse(content=value.to_safe_dict(), status_code=status.HTTP_200_OK)
-    raise Not_Found()
+    raise Not_Found("ID is not found")
 
 
 @user_router.delete("/users/{user_id}")
@@ -93,12 +94,15 @@ def delete_user(request: Request, user_id: str = None) -> str:
         raise Unauthorized()
     if not user_id:
         raise Not_Found()
+    if request.state.current_user.role != 'superuser':
+        raise Unauthorized("You are not allowed to perform this operation")
     data = storage.all("User")
     if not data:
         raise Not_Found()
     for key, value in data.items():
         if value.id == user_id:
             storage.delete(value)
+            storage.save()
             return JSONResponse(content={}, status_code=status.HTTP_200_OK)
     raise Not_Found()
 
@@ -159,7 +163,7 @@ async def create_a_user(request: Request) -> str:
     new_user.name = name
     new_user.username = username
     new_user.email = email
-    new_user._hashed_password = password
+    new_user.password = password
 
     new_user.save()
     return JSONResponse(content=new_user.to_safe_dict(), status_code=status.HTTP_201_CREATED)
@@ -259,7 +263,7 @@ def get_user_visit_history(request: Request, user_id: str = None) -> str:
         raise Unauthorized()
     visits = storage.search_key_value("Review", "user_id", user_id)
     if not visits:
-        return JSONResponse(content={"message": "This user is yet to record a visit"}, status_code=status.HTTP_404_NOT_FOUND)
+        return JSONResponse(content="This user is yet to record a visit", status_code=status.HTTP_404_NOT_FOUND)
     visit_list = []
     for visit in visits:
         place_id = visit.place_id

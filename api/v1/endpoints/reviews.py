@@ -118,7 +118,7 @@ def delete_a_review(request: Request, review_id: str = None) -> str:
         raise Not_Found("Review not found")
     review = review[0]
     if review.user_id != request.state.current_user.id:
-        if request.state.current_user.role is not 'admin' or request.state.current_user.role is not 'superuser':
+        if request.state.current_user.role == 'user':
             raise Unauthorized("You are not allowed to perform this operation")
     storage.delete(review)
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)

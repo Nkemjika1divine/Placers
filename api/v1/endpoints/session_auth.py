@@ -26,6 +26,11 @@ async def create_account(request: Request):
     except Exception as error:
         raise Bad_Request(error)
     
+    if not storage.all("User"):
+        role = 'superuser'
+    else:
+        role = 'user'
+
     name = request_body.get("name", None)
     username = request_body.get("username")
     if not username:
@@ -47,7 +52,7 @@ async def create_account(request: Request):
     if not password:
         raise Bad_Request("Password required")
     
-    user = User(name=name, username=username, email=email, password=password)
+    user = User(name=name, username=username, email=email, password=password, role=role)
     storage.new(user)
     storage.save()
     return JSONResponse(content={"message": "User created",
