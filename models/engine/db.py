@@ -2,6 +2,7 @@
 """The Database Module"""
 from dotenv import load_dotenv
 from models.basemodel import Base
+from models.category import Category
 from models.place import Place
 from models.review import Review
 from models.user import User
@@ -16,7 +17,8 @@ load_dotenv()
 classes = {
     "User": User,
     "Place": Place,
-    "Review": Review
+    "Review": Review,
+    "Category": Category
 }
 
 

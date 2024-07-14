@@ -56,9 +56,9 @@ def get_users(request: Request):
     users = storage.all("User")
     if not users:
         raise Not_Found()
-    all_users = {}
-    for key, value in users.items():
-        all_users[key] = value.to_safe_dict()
+    all_users = []
+    for value in users.values():
+        all_users.append(value.to_safe_dict())
     return JSONResponse(content=all_users, status_code=status.HTTP_200_OK)
 
 

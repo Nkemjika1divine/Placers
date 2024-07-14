@@ -59,11 +59,14 @@ API routes include:
 - `GET /api/v1/places/all_reviews/{place_id}`: Returns all the reviews given to a place
 
 ### Reviews
-- `GET /api/v1/reviews`: Returns all thhe reviews in the application
+- `GET /api/v1/reviews`: Returns all the reviews in the application
 - `GET /api/v1/reviews/{review_id}`: Returns a particular review
 - `POST /api/v1/reviews`: Adds a new review
 - `PUT /api/v1/reviews/{review_id}`: Edits a review. This can only be done by the reviewer.
 - `DELETE /api/v1/reviews/{review_id}`: This deletes a review. It can only be done by the reviewer, an admin or the superuser
+
+### Categories
+- `GET /api/v1/categories`: Returns all the categories in the application
 
 
 ## Role Description:
