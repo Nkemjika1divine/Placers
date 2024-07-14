@@ -23,7 +23,7 @@ class Place(BaseModel, Base):
     creator_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     recently_updated_by = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
     name = Column(String(50), nullable=False)
-    category = Column(String(50), nullable=False)
+    category_id = Column(String(50), ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
     address = Column(String(250), nullable=False)
     description = Column(String(200), nullable=True)
     city = Column(String(50), nullable=False)

@@ -13,6 +13,8 @@ class User(BaseModel, Base):
     __tablename__ = "users"
     name = Column(String(50), nullable=False)
     username = Column(String(20), nullable=False, unique=True)
+    current_city = Column(String(50), nullable=True)
+    current_country = Column(String(50), nullable=True)
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(250), nullable=False)
     role = Column(String(20), nullable=False, default="user")
