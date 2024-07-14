@@ -32,16 +32,18 @@ async def create_account(request: Request):
         role = 'user'
 
     name = request_body.get("name", None)
+    if type(name) is not str:
+        raise Bad_Request("name must be a string")
     username = request_body.get("username")
-    if not username:
-        raise Bad_Request("Username required")
+    if not username or type(username) is not str:
+        raise Bad_Request("Username missing or not a string")
     existing_user = storage.search_key_value("User", "username", username)
     if existing_user:
         raise Forbidden("Username taken")
     
     email = request_body.get("email", None)
-    if not email:
-        raise Bad_Request("Email required")
+    if not email or type(email) is not str:
+        raise Bad_Request("Email missing or not a string")
     if not validate_email_pattern(email):
         raise Forbidden("Wrong email format")
     existing_user = storage.search_key_value("User", "email", email)
@@ -49,16 +51,15 @@ async def create_account(request: Request):
         raise Forbidden("Email already registered")
     
     password = request_body.get("password", None)
-    if not password:
-        raise Bad_Request("Password required")
+    if not password or type(password) is not str:
+        raise Bad_Request("Password missing or not a string")
     
-    user = User(name=name, username=username, email=email, password=password, role=role)
+    user_tool = User()
+    
+    user = User(name=name, username=username, email=email, password=user_tool.hash_password(password), role=role)
     storage.new(user)
     storage.save()
-    return JSONResponse(content={"message": "User created",
-                                 "User details": {"username": user.username,
-                                                  "email": user.email}},
-                        status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content=user.to_safe_dict(), status_code=status.HTTP_201_CREATED)
     
 
 

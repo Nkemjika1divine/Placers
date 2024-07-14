@@ -109,23 +109,31 @@ async def create_a_user(request: Request) -> str:
     except Exception:
         raise Bad_Request()
     name = request_body.get("name", None)
+    if type(name) is not str:
+        raise Bad_Request("Name must be a string")
     username = request_body.get("username", None)
-    if not username:
-        raise Bad_Request(detail="Username missing")
+    if not username or type(username) is not str:
+        raise Bad_Request("Username missing or not a string")
     if storage.search_key_value("User", "username", username):
         raise Unauthorized("Username taken")
     current_city = request_body.get("current_city", None)
+    if type(current_city) is not str:
+        raise Bad_Request("current_city must be a string")
     current_country = request_body.get("current_country", None)
+    if type(current_country) is not str:
+        raise Bad_Request("current_country must be a string")
     email = request_body.get("email", None)
-    if not email:
-        raise Bad_Request(detail="Email missing")
+    if not email or type(email) is not str:
+        raise Bad_Request("Email missing or not a string")
     if not validate_email_pattern(email):
         raise Unauthorized("Enter a valid email")
     if storage.search_key_value("User", "email", email):
         raise Unauthorized("Email already registered")
     password = request_body.get("password", None)
-    if not password:
-        raise Bad_Request(detail="Password missing")
+    if not password or type(password) is not str:
+        raise Bad_Request(detail="Password missing or not a string")
+    
+    user = User()
     
     new_user = User()
     new_user.name = name
@@ -133,7 +141,7 @@ async def create_a_user(request: Request) -> str:
     new_user.current_city = current_city
     new_user.current_country = current_country
     new_user.email = email
-    new_user.password = password
+    new_user.password = user.hash_password(password)
 
     new_user.save()
     return JSONResponse(content=new_user.to_safe_dict(), status_code=status.HTTP_201_CREATED)
@@ -160,11 +168,23 @@ async def edit_user_info(request: Request, user_id: str = None) -> str:
     for user in all_users.values():
         if user.id == user_id:
             if "name" in user_data:
+                if type(user_data['name']) is not str:
+                    raise Bad_Request("Name must be a string")
                 user.name = user_data["name"]
             if "username" in user_data:
+                if type(user_data['username']) is not str:
+                    raise Bad_Request("username must be a string")
                 if storage.search_key_value("User", "username", user_data["username"]):
                     raise Unauthorized("Username already taken")
                 user.username = user_data["username"]
+            if 'current_city' in user_data:
+                if type(user_data['current_city']) is not str:
+                    raise Bad_Request("current_city must be a string")
+                user.current_city = user_data['current_city']
+            if 'current_country' in user_data:
+                if type(user_data['current_country']) is not str:
+                    raise Bad_Request("current_country must be a string")
+                user.current_country = user_data['current_country']
             if "email" in user_data:
                 raise Unauthorized("You are not allowed to change a user's email")
             if "password" in user_data:
@@ -277,18 +297,33 @@ def user_profile(request: Request) -> str:
 @user_router.put('/profile/update')
 async def profile_update(request: Request) -> str:
     """PUT method that Updates the user's profile"""
+    from models import storage
     if not request:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
     user = request.state.current_user
     try:
-         request_body = await request.json()
+        user_data = await request.json()
     except Exception:
         raise Bad_Request()
-    if 'name' in request_body:
-        user.name = request_body['name']
-    if 'username' in request_body:
-        user.username = request_body['username']
+    if "name" in user_data:
+        if type(user_data['name']) is not str:
+            raise Bad_Request("Name must be a string")
+        user.name = user_data["name"]
+    if "username" in user_data:
+        if type(user_data['username']) is not str:
+            raise Bad_Request("username must be a string")
+        if storage.search_key_value("User", "username", user_data["username"]):
+            raise Unauthorized("Username already taken")
+        user.username = user_data["username"]
+    if 'current_city' in user_data:
+        if type(user_data['current_city']) is not str:
+            raise Bad_Request("current_city must be a string")
+        user.current_city = user_data['current_city']
+    if 'current_country' in user_data:
+        if type(user_data['current_country']) is not str:
+            raise Bad_Request("current_country must be a string")
+        user.current_country = user_data['current_country']
     user.save()
     return JSONResponse(content="User successfully updated", status_code=status.HTTP_200_OK)
