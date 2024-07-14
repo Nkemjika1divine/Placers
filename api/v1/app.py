@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Module deploying our FastAPI app"""
 import os
+from api.v1.endpoints.categories import categories_router
 from api.v1.endpoints.index import index_router
 from api.v1.endpoints.users import user_router
 from api.v1.endpoints.places import place_router
@@ -23,6 +24,7 @@ app.include_router(user_router, prefix=api_prefix)
 app.include_router(place_router, prefix=api_prefix)
 app.include_router(session_router, prefix=api_prefix)
 app.include_router(review_router, prefix=api_prefix)
+app.include_router(categories_router, prefix=api_prefix)
 
 path_list = ['/api/v1/status*',
              '/api/v1/forbidden*',

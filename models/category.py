@@ -7,7 +7,8 @@ from sqlalchemy import Column, String, ForeignKey
 class Category(BaseModel, Base):
     """The Category model"""
     __tablename__ = "categories"
-    category = Column(String(50), nullable=False, unique=True)
+    category_name = Column(String(50), nullable=False, unique=True)
+    user_who_added_category = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

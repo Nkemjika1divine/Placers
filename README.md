@@ -26,8 +26,8 @@ API routes include:
 - `POST /api/v1/session/create_account`: This helps the user to create an account on the application
 - `POST /api/v1/session/login`: This helps thte user to log into the application
 - `DELETE /api/v1/session/logout`: This helps the user to logout of the application
-- `GET /api/v1/users/send_verification_token`: This sends the verification token to the user's email
-- `POST /api/v1/users/verify_token`: This takes the user's input and checks if it matches with the token.
+- `GET /api/v1/session/send_verification_token`: This sends the verification token to the user's email
+- `POST /api/v1/session/verify_token`: This takes the user's input and checks if it matches with the token.
 
 
 ### Stats:
@@ -66,7 +66,8 @@ API routes include:
 - `DELETE /api/v1/reviews/{review_id}`: This deletes a review. It can only be done by the reviewer, an admin or the superuser
 
 ### Categories
-- `GET /api/v1/categories`: Returns all the categories in the application
+- `GET /api/v1/categories`: Returns all the categories in the application. This can only be done by the admins and the superuser
+- `POST /api/v1/categories`: Adds a new category. This can only be done by the admins and the superuser
 
 
 ## Role Description:
