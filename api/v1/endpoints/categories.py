@@ -11,7 +11,7 @@ categories_router = APIRouter()
 
 @categories_router.get("/categories")
 def get_all_categories(request: Request):
-    """GET request that returns all categories"""
+    """GET method that returns all categories"""
     from models import storage
     if not request:
         raise Bad_Request()
@@ -25,6 +25,22 @@ def get_all_categories(request: Request):
     all_categories =  []
     for value in categories.values():
         all_categories.append(value.to_dict())
+    return JSONResponse(content=all_categories, status_code=status.HTTP_200_OK)
+
+@categories_router.get("/categories/names")
+def get_category_names(request: Request):
+    """GET method that returns only the names of the categories"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    categories = storage.all("Category")
+    if not categories:
+        raise Not_Found("No categories in the Database")
+    all_categories = []
+    for value in categories.values():
+        all_categories.append(value.category_name)
     return JSONResponse(content=all_categories, status_code=status.HTTP_200_OK)
 
 @categories_router.post("/categories")

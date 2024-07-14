@@ -68,6 +68,7 @@ API routes include:
 ### Categories
 - `GET /api/v1/categories`: Returns all the categories in the application. This can only be done by the admins and the superuser
 - `POST /api/v1/categories`: Adds a new category. This can only be done by the admins and the superuser
+- `GET /api/v1/categories/names`: Returns just the names of the categories in the database
 
 
 ## Role Description:
