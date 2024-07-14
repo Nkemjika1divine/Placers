@@ -148,6 +148,8 @@ async def create_a_user(request: Request) -> str:
         raise Bad_Request(detail="Username missing")
     if storage.search_key_value("User", "username", username):
         raise Unauthorized("Username taken")
+    current_city = request_body.get("current_city", None)
+    current_country = request_body.get("current_country", None)
     email = request_body.get("email", None)
     if not email:
         raise Bad_Request(detail="Email missing")
@@ -162,6 +164,8 @@ async def create_a_user(request: Request) -> str:
     new_user = User()
     new_user.name = name
     new_user.username = username
+    new_user.current_city = current_city
+    new_user.current_country = current_country
     new_user.email = email
     new_user.password = password
 

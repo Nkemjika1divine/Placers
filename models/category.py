@@ -5,9 +5,9 @@ from sqlalchemy import Column, String, ForeignKey
 
 
 class Category(BaseModel, Base):
-    """The category class"""
+    """The Category model"""
     __tablename__ = "categories"
-    category = Column(String(29), nullable=False, unique=True)
+    category = Column(String(50), nullable=False, unique=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
