@@ -61,10 +61,8 @@ async def add_a_review(request: Request, place_id: str = None) -> str:
     place = storage.search_key_value("Place", "id", place_id)
     if not place:
         raise Not_Found("Place does not exist")
-    place = place[0]
 
     user_id = request.state.current_user.id
-    place_id = place.id
     rating = request_body.get("rating", None)
     if not rating or type(rating) is not int or rating > 10 or rating < 0:
         raise Bad_Request("rating missing and must be a whole number from 0 to 10")

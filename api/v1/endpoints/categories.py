@@ -27,6 +27,7 @@ def get_all_categories(request: Request):
         all_categories.append(value.to_dict())
     return JSONResponse(content=all_categories, status_code=status.HTTP_200_OK)
 
+
 @categories_router.get("/categories/names")
 def get_category_names(request: Request):
     """GET method that returns only the names of the categories"""
@@ -42,6 +43,7 @@ def get_category_names(request: Request):
     for value in categories.values():
         all_categories.append(value.category_name)
     return JSONResponse(content=all_categories, status_code=status.HTTP_200_OK)
+
 
 @categories_router.post("/categories")
 async def add_new_category(request: Request):
@@ -67,6 +69,7 @@ async def add_new_category(request: Request):
     new_category.user_who_added_category = user_id
     new_category.save()
     return JSONResponse(content=new_category.to_dict(), status_code=status.HTTP_201_CREATED)
+
 
 @categories_router.put("/categories/{category_id}")
 async def edit_a_category(request: Request, category_id: str = None):

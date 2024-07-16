@@ -16,7 +16,7 @@ class Reply(BaseModel, Base):
     __tablename__ = "replies"
     review_id = Column(String(50), ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False)
     user_id = Column(String(50), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    reply = Column(String(200), nullable=False)
+    full_reply = Column(String(200), nullable=False)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
