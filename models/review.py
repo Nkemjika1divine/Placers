@@ -2,6 +2,13 @@
 """The Review module"""
 from models.basemodel import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, CheckConstraint, Integer
+"""
+- user_id = the id of the user posting the review
+- place_id = the place the review is for
+- rating = the rating given by the user to the place
+- full_review = the full review of the user
+- like = signifies if the user likes the place
+"""
 
 
 class Review(BaseModel, Base):
