@@ -74,6 +74,8 @@ API routes include:
 - `GET /api/v1/categories/names`: Returns just the names of the categories in the database
 - `PUT /api/v1/categories/{category_id}`: Edits a category
 
+### Replies
+- `GET /api/v1/replies`: Returns all the replies in the database
 
 ## Role Description:
 

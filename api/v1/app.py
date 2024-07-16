@@ -6,6 +6,7 @@ from api.v1.endpoints.index import index_router
 from api.v1.endpoints.users import user_router
 from api.v1.endpoints.places import place_router
 from api.v1.endpoints.session_auth import session_router
+from api.v1.endpoints.replies import replies_router
 from api.v1.endpoints.reviews import review_router
 from api.v1.error_handlers import Unauthorized, Forbidden
 from auth.middleware.middleware import AuthMiddleware
@@ -25,6 +26,7 @@ app.include_router(place_router, prefix=api_prefix)
 app.include_router(session_router, prefix=api_prefix)
 app.include_router(review_router, prefix=api_prefix)
 app.include_router(categories_router, prefix=api_prefix)
+app.include_router(replies_router, prefix=api_prefix)
 
 path_list = ['/api/v1/status*',
              '/api/v1/forbidden*',
