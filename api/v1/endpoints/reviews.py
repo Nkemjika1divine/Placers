@@ -30,6 +30,8 @@ def get_a_review(request: Request, review_id: str = None) -> str:
     from models import storage
     if not request:
         return Bad_Request()
+    if not review_id:
+        raise Not_Found()
     if not request.state.current_user:
         raise Unauthorized()
     review = storage.search_key_value("Review", "id", review_id)
