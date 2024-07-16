@@ -59,6 +59,7 @@ API routes include:
 - `GET /api/v1/places/average_rating/{place_id}`: Gets the average rating of a place.
 - `GET /api/v1/places/all_reviews/{place_id}`: Returns all the reviews given to a place
 - `GET /api/v1/places/{place_id}/like_details`: Returns the likes count of a place and the percentage of likes
+- `GET /api/v1/places/places_by_category`: Returns all places that match a certain category
 
 ### Reviews
 - `GET /api/v1/reviews`: Returns all the reviews in the application

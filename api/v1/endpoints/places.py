@@ -308,3 +308,30 @@ def get_like_details(request: Request, place_id: str = None) -> str:
             like_count += 1
     percentage = (like_count/id_count) * 100
     return JSONResponse(content={"likes": like_count, "percentage_of_likes": percentage}, status_code=status.HTTP_200_OK)
+
+
+@place_router.get("/places/places_by_category")
+async def search_places_by_category(request: Request) -> str:
+    """GET method that searches for places by category"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    try:
+        request_body = await request.json()
+    except Exception as e:
+        raise Bad_Request(f"Error: {e}")
+    if 'category' in request_body:
+        if type(request_body['category']) is not str:
+            raise Bad_Request('category must be a string')
+        all_categories = storage.all("Category")
+        if not all_categories:
+            raise Not_Found(f"{request_body['category']} not found")
+        for category in all_categories:
+            if category.category_name == request_body['category']:
+                all_places = storage.search_key_value("Place", "category_id", category.id)
+                if not all_places:
+                    raise Not_Found(f"No place found for this category {request_body['category']}")
+                return JSONResponse(content=all_places, status_code=status.HTTP_200_OK)
+    raise Bad_Request("no category in the request")
