@@ -2,6 +2,7 @@
 """The Place Module"""
 from models.basemodel import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Float
+from typing import TypeVar
 
 
 class Place(BaseModel, Base):
@@ -21,3 +22,19 @@ class Place(BaseModel, Base):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+    
+
+    def get_average_rating(self) -> float:
+        """Retrieves the average rating of a place"""
+        from models import storage
+        place_id = self.id
+        all_reviews = storage.all("Review")
+        if not all_reviews:
+            return 0
+        count = 0
+        total_rating = 0
+        for review in all_reviews.values():
+            if review.place_id == place_id:
+                count += 1
+                total_rating += review.rating
+        return total_rating/count

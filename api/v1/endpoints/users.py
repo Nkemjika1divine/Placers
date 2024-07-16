@@ -325,3 +325,21 @@ async def profile_update(request: Request) -> str:
         user.current_country = user_data['current_country']
     user.save()
     return JSONResponse(content="User successfully updated", status_code=status.HTTP_200_OK)
+
+
+@user_router.get("/users/best_places_nearby")
+def get_best_places_nearby(request: Request) -> str:
+    """GET method that returns the best places near a user using average rating"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    all_places = storage.all("Place")
+    if not all_places:
+        raise Not_Found("no place in the database yet")
+    place_list = []
+    for place in all_places.values():
+        if place.get_average_rating() >= 7:
+            place_list.append(place)
+    return JSONResponse(content=place_list, status_code=status.HTTP_200_OK)
