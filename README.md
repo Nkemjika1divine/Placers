@@ -77,6 +77,7 @@ API routes include:
 ### Replies
 - `GET /api/v1/replies`: Returns all the replies in the database
 - `GET /api/v1/replies/{reply_id}`: Return a particular reply from the database
+- `DELETE /api/v1/replies/{reply_id}`: Deletes a reply from the database
 
 
 ## Role Description:

@@ -129,6 +129,7 @@ def delete_a_review(request: Request, review_id: str = None) -> str:
         if request.state.current_user.role == 'user':
             raise Unauthorized("You are not allowed to perform this operation")
     storage.delete(review)
+    storage.save
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 
 

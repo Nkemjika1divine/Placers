@@ -39,3 +39,25 @@ def get_a_reply(request: Request, reply_id: str = None) -> str:
         raise Not_Found("This reply does not exist")
     reply = reply[0]
     return JSONResponse(content=reply.to_dict(), status_code=status.HTTP_200_OK)
+
+
+@replies_router.delete("/replies/{reply_id}")
+def delete_a_reply(request: Request, reply_id: str = None) -> str:
+    """DELETE method that deletes a reply"""
+    from models import storage
+    if not request:
+        return Bad_Request()
+    if not reply_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    user = request.state.current_user
+    reply = storage.search_key_value("Reply", "id", reply_id)
+    if user.role == "user":
+        if reply[0].user_id != user.id:
+            raise Unauthorized("You are not authorized to perform this operation")
+    storage.delete(reply[0])
+    storage.save()
+    return JSONResponse(content={}, status_code=status.HTTP_200_OK)
+
+
