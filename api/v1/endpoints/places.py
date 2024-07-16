@@ -255,13 +255,9 @@ def get_place_average_rating(request: Request, place_id: str = None) -> str:
     place = storage.search_key_value("Place", "id", place_id)
     if not place:
         raise Not_Found("Place not found")
-    reviews = storage.search_key_value("Review", "place_id", place_id)
-    if not reviews:
-        return JSONResponse(content={"message": "No reviews for this place"}, status_code=status.HTTP_404_NOT_FOUND)
-    total = 0
-    for review in reviews:
-        total += review.rating
-    average_rating = total / len(reviews)
+    average_rating = place.get_average_rating()
+    if average_rating == 0:
+        raise Not_Found(f"no ratings for this {place.name} yet")
     return JSONResponse(content={"average_rating": average_rating}, status_code=status.HTTP_200_OK)
 
 
