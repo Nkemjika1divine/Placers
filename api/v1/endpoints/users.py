@@ -335,11 +335,13 @@ def get_best_places_nearby(request: Request) -> str:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
+    user_city = request.state.current_user.city
     all_places = storage.all("Place")
     if not all_places:
         raise Not_Found("no place in the database yet")
     place_list = []
     for place in all_places.values():
-        if place.get_average_rating() >= 7:
-            place_list.append(place)
+        if user_city == place.city:
+            if place.get_average_rating() >= 7:
+                place_list.append(place)
     return JSONResponse(content=place_list, status_code=status.HTTP_200_OK)

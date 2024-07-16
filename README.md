@@ -47,6 +47,7 @@ API routes include:
 - `GET /api/v1/users/profile`: This returns the profile of the logged in user
 - `PUT /api/v1/profile/update`: This updates the profile of the user himself
 - `GET /api/v1/users/demote/{user_id}`: This is used to demote an admin to a regular user. It can only be done by the superuser
+- `GET /api/v1/users/best_places_nearby`: This finds the best places in the city a user currently resides in
 
 ### Places
 - `GET /api/v1/places`: Returns all places in the database

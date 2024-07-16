@@ -307,4 +307,4 @@ def get_like_details(request: Request, place_id: str = None) -> str:
         if review.like == "yes":
             like_count += 1
     percentage = (like_count/id_count) * 100
-    return JSONResponse(content={"likes": like_count, "percentage_likes": percentage}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={"likes": like_count, "percentage_of_likes": percentage}, status_code=status.HTTP_200_OK)
