@@ -93,6 +93,7 @@ def delete_a_place(request: Request, place_id: str = None,) -> str:
         raise Not_Found()
     raise Unauthorized()
 
+
 @place_router.post("/places")
 async def add_place(request: Request):
     """Adds a new place to the database"""
@@ -104,34 +105,57 @@ async def add_place(request: Request):
         user_id = request.state.current_user.id
         try:
             request_body = await request.json()
-        except Exception:
-            raise Bad_Request()
-        
+        except Exception as e:
+            raise Bad_Request(f"Request body not processed properly. Reason: {e}")
+        # get name
         name = request_body.get("name", None)
-        if not name:
-            raise Bad_Request("There must be a name for the place")
+        if not name or type(name) is not str:
+            raise Bad_Request("name missing or not str")
+        # get and validate category
         category = request_body.get("category", None)
+        if not category or type(category) is not str:
+            raise Bad_Request("category missing or not a string")
+        list_of_categories = storage.all("Category")
+        if not list_of_categories:
+            raise Unauthorized("No category in the database yet")
+        for value in list_of_categories.values():
+            if value.category_name == category:
+                category_id = value.id
+                break
+        if not category_id:
+            raise Bad_Request("Category not found in the database")
+        # get description
         description = request_body.get("description", None)
-        if not category:
-            raise Bad_Request("There must be a category for the place")
+        if description and type(description) is not str:
+            raise Bad_Request("description must be a string")
+        # get address
         address = request_body.get("address", None)
-        if not address:
-            raise Bad_Request("There must be an address for the place")
+        if not address or type(address) is not str:
+            raise Bad_Request("address missing or not a string")
+        # get city
         city = request_body.get("city", None)
-        if not city:
-            raise Bad_Request("There must be a city for the place")
+        if not city or type(city) is not str:
+            raise Bad_Request("city missing or not str")
+        # get state
         state = request_body.get("state", None)
-        if not state:
-            raise Bad_Request("There must be a state for the place")
+        if not state or type(state) is not str:
+            raise Bad_Request("state missing or not a string")
+        # get country
         country = request_body.get("country", None)
-        if not country:
-            raise Bad_Request("There must be a country for the place")
+        if not country or type(country) is not str:
+            raise Bad_Request("country missing or not a string")
+        # get latitude
         latitude = request.get("latitude", None)
+        if latitude and type(latitude) is not str:
+            raise Bad_Request("latitude must be a float")
+        # get longitude
         longitude = request.get("longitude", None)
+        if longitude and type(longitude) is not str:
+            raise Bad_Request("longitude must be a float")
 
         place = Place(creator_id=user_id,
                       name=name,
-                      category=category,
+                      category_id=category_id,
                       description=description,
                       address=address,
                       city=city,
@@ -143,6 +167,7 @@ async def add_place(request: Request):
         storage.save()
         return JSONResponse(content=place.to_dict(), status_code=status.HTTP_201_CREATED)
     raise Unauthorized()
+
 
 @place_router.put("/places/{place_id}")
 async def edit_place(place_id: str, request: Request) -> str:
@@ -159,35 +184,58 @@ async def edit_place(place_id: str, request: Request) -> str:
         # user_role = request.state.current_user.role
         try:
             request_body = await request.json()
-        except Exception:
-            raise Bad_Request()
+        except Exception as e:
+            raise Bad_Request(f"There's a problem with the request body. Reason {e}")
         
         place = storage.search_key_value("Place", "id", place_id)
         if not place:
             raise Not_Found("Place not found")
-        if request.state.current_user.role == "user":
-            raise Unauthorized("You can't perform this action")
         
         if "creator_id" in request_body:
             raise Unauthorized("You are not allowed to change the creator_id")
         place[0].recently_updated_by = user_id
         if "name" in request_body:
+            if type(request_body['name']) is not str:
+                raise Bad_Request("name must be a string")
             place[0].name = request_body["name"]
         if "category" in request_body:
-            place[0].category = request_body["category"]
+            if type(request_body['category']) is not str:
+                raise Bad_Request("category must be a string")
+            list_of_categories = storage.all("Category")
+            if not list_of_categories:
+                raise Unauthorized("no categories in the database yet")
+            for value in list_of_categories.values():
+                if value.category_name == request_body['category']:
+                    category_id = value.id
+                    break
+            place[0].category_id = category_id
         if "description" in request_body:
+            if type(request_body['description']) is not str:
+                raise Bad_Request("description must be a string")
             place[0].description = request_body["description"]
         if "address" in request_body:
+            if type(request_body['address']) is not str:
+                raise Bad_Request("address must be a string")
             place[0].address = request_body["address"]
         if "city" in request_body:
+            if type(request_body['city']) is not str:
+                raise Bad_Request("city must be a string")
             place[0].city = request_body["city"]
         if "state" in request_body:
+            if type(request_body['state']) is not str:
+                raise Bad_Request("state must be a string")
             place[0].state = request_body["state"]
         if "country" in request_body:
+            if type(request_body['country']) is not str:
+                raise Bad_Request("country must be a string")
             place[0].country = request_body["country"]
         if "latitude" in request_body:
+            if type(request_body['latitude']) is not str:
+                raise Bad_Request("latitude must be a float")
             place[0].latitude = request_body["latitude"]
         if "longitude" in request_body:
+            if type(request_body['longitude']) is not str:
+                raise Bad_Request("longitude must be a float")
             place[0].longitude = request_body["longitude"]
         place[0].save()
         return JSONResponse(content=place[0].to_dict(), status_code=status.HTTP_200_OK)
@@ -217,7 +265,6 @@ def get_place_average_rating(request: Request, place_id: str = None) -> str:
     return JSONResponse(content={"average_rating": average_rating}, status_code=status.HTTP_200_OK)
 
 
-
 @place_router.get("/places/all_reviews/{place_id}")
 def get_all_reviews_of_place(request: Request, place_id: str = None) -> str:
     """GET method to retrieve all reviews of a place"""
@@ -233,9 +280,35 @@ def get_all_reviews_of_place(request: Request, place_id: str = None) -> str:
         raise Not_Found("Place not found")
     reviews = storage.search_key_value("Review", "place_id", place_id)
     if not reviews:
-        return JSONResponse(content="No reviews for this place", status_code=status.HTTP_404_NOT_FOUND)
+        raise Not_Found("No reviews for this place")
     review_list = []
     for review in reviews:
         review_json = review.to_dict()
         review_list.append(review_json)
     return JSONResponse(content=review_json, status_code=status.HTTP_200_OK)
+
+
+@place_router.get("/places/{place_id}/like_details")
+def get_like_details(request: Request, place_id: str = None) -> str:
+    """GET method that returns the number of likes a place has and the percentage likes"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not place_id:
+        raise Not_Found("Place not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    place = storage.search_key_value("Place", "id", place_id)
+    if not place:
+        raise Not_Found("Place not found")
+    reviews = storage.search_key_value("Review", "place_id", place_id)
+    if not reviews:
+        raise Not_Found("No reviews for this place")
+    id_count = 0
+    like_count = 0
+    for review in reviews:
+        id_count += 1
+        if review.like == "yes":
+            like_count += 1
+    percentage = (like_count/id_count) * 100
+    return JSONResponse(content={"likes": like_count, "percentage_likes": percentage}, status_code=status.HTTP_200_OK)

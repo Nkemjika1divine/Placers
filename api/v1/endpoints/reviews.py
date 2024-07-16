@@ -42,7 +42,7 @@ def get_a_review(request: Request, review_id: str = None) -> str:
 
 @review_router.post("/{place_id}/reviews")
 async def add_a_review(request: Request, place_id: str = None) -> str:
-    """POST method to add a new route"""
+    """POST method to add a new review"""
     from models import storage
     print("in post reviews")
     if not place_id:
@@ -65,8 +65,13 @@ async def add_a_review(request: Request, place_id: str = None) -> str:
     place_id = place.id
     rating = request_body.get("rating", None)
     if not rating or type(rating) is not int or rating > 10 or rating < 0:
-        raise Bad_Request("Rating must be added, and must be a whole number from 0 to 10")
+        raise Bad_Request("rating missing and must be a whole number from 0 to 10")
     full_review = request_body.get("full_review", None)
+    if type(full_review) is not str:
+        raise Bad_Request("full_review must be a string")
+    like = request_body.get("like", None)
+    if type(like) is not str:
+        raise Bad_Request("like must be a string")
 
     review = Review(user_id=user_id, place_id=place_id, rating=rating, full_review=full_review)
     storage.new(review)

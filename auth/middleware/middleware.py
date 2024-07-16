@@ -26,6 +26,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 if session_id:
                     current_user = self.auth.check_db_current_user(request)
                     if current_user:
+                        if current_user.barred == "yes":
+                            raise Unauthorized("You are indefinitely suspended from this application")
                         request.state.current_user = current_user
                         return await call_next(request)
                 authorization = await self.auth.authorization_header(request)

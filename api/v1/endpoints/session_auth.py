@@ -54,9 +54,7 @@ async def create_account(request: Request):
     if not password or type(password) is not str:
         raise Bad_Request("Password missing or not a string")
     
-    user_tool = User()
-    
-    user = User(name=name, username=username, email=email, password=user_tool.hash_password(password), role=role)
+    user = User(name=name, username=username, email=email, password=password, role=role)
     storage.new(user)
     storage.save()
     return JSONResponse(content=user.to_safe_dict(), status_code=status.HTTP_201_CREATED)

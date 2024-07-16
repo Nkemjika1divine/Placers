@@ -57,6 +57,7 @@ API routes include:
 - `PUT /api/v1/places/{place_id}`: Edits the information about a place. This can only be done by the admins and the superuser only
 - `GET /api/v1/places/average_rating/{place_id}`: Gets the average rating of a place.
 - `GET /api/v1/places/all_reviews/{place_id}`: Returns all the reviews given to a place
+- `GET /api/v1/places/{place_id}/like_details`: Returns the likes count of a place and the percentage of likes
 
 ### Reviews
 - `GET /api/v1/reviews`: Returns all the reviews in the application

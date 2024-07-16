@@ -133,15 +133,13 @@ async def create_a_user(request: Request) -> str:
     if not password or type(password) is not str:
         raise Bad_Request(detail="Password missing or not a string")
     
-    user = User()
-    
     new_user = User()
     new_user.name = name
     new_user.username = username
     new_user.current_city = current_city
     new_user.current_country = current_country
     new_user.email = email
-    new_user.password = user.hash_password(password)
+    new_user.password = password
 
     new_user.save()
     return JSONResponse(content=new_user.to_safe_dict(), status_code=status.HTTP_201_CREATED)

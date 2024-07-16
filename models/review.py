@@ -11,6 +11,7 @@ class Review(BaseModel, Base):
     place_id = Column(String(50), ForeignKey("places.id", ondelete="CASCADE"), nullable=False)
     rating = Column(Integer, CheckConstraint("rating >= 0 AND rating <= 10"), nullable=False)
     full_review = Column(String(500), nullable=True)
+    like = Column(String(5), nullable=True)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
