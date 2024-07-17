@@ -34,6 +34,8 @@ API routes include:
 - `GET /api/v1/number_of_users`: Retrieves the number of users in the application
 - `GET /api/v1/number_of_places`: Retrieves the number of places in the application
 - `GET /api/v1/number_of_reviews`: Retrieves the number of Reviews in the application
+- `GET /api/v1/number_of_categories`: Retrieves the number of Categories in the application
+- `GET /api/v1/number_of_replies`: Retrieves the number of Replies in the application
 
 ### Users:
 - `GET /api/v1/users`: Returns a collection of all registered users in the application

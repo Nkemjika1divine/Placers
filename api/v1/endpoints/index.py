@@ -3,19 +3,9 @@
 from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import *
-# from starlette.status import HTTP_401_UNAUTHORIZED
-# from api.v1.endpoints.index import index_router
-
 
 
 index_router = APIRouter()
-
-
-
-"""@app.exception_handler(Unauthorized)
-def handle_unauthorized():
-    return JSONResponse({"error": "Unauthorized"}, status_code=HTTP_401_UNAUTHORIZED)"""
-
 
 
 @index_router.get("/status")
@@ -38,7 +28,7 @@ def number_of_users(request: Request):
     """GET request that returns the number of users in the database"""
     from models import storage
     if not request.state.current_user:
-        raise Bad_Request()
+        raise Unauthorized()
     user_count = storage.count("User")
     return JSONResponse(content={"users": user_count}, status_code=status.HTTP_200_OK)
 
@@ -47,7 +37,7 @@ def number_of_places(request: Request):
     """GET request that returns the number of users in the database"""
     from models import storage
     if not request.state.current_user:
-        raise Bad_Request()
+        raise Unauthorized()
     place_count = storage.count("Place")
     return JSONResponse(content={"places": place_count}, status_code=status.HTTP_200_OK)
 
@@ -56,6 +46,26 @@ def number_of_reviews(request: Request):
     """GET request that returns the number of users in the database"""
     from models import storage
     if not request.state.current_user:
-        raise Bad_Request()
+        raise Unauthorized()
     review_count = storage.count("Review")
     return JSONResponse(content={"reviews": review_count}, status_code=status.HTTP_200_OK)
+
+
+@index_router.get("/number_of_replies")
+def number_of_replies(request: Request):
+    """GET request that returns the number of replies in the database"""
+    from models import storage
+    if not request.state.current_user:
+        raise Unauthorized()
+    reply_count = storage.count("Reply")
+    return JSONResponse(content={"users": reply_count}, status_code=status.HTTP_200_OK)
+
+
+@index_router.get("/number_of_categories")
+def number_of_categories(request: Request):
+    """GET request that returns the number of users in the database"""
+    from models import storage
+    if not request.state.current_user:
+        raise Unauthorized()
+    categories_count = storage.count("User")
+    return JSONResponse(content={"users": categories_count}, status_code=status.HTTP_200_OK)

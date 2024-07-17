@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse
 
 load_dotenv()
 
+
 app = FastAPI()
 api_prefix = "/api/v1"
 app.include_router(index_router, prefix=api_prefix)
