@@ -2,6 +2,7 @@
 """Module for session authentication"""
 from fastapi import Request
 from auth.auth import Auth
+from models.session import Session
 from uuid import uuid4
 from typing import TypeVar
 
@@ -14,40 +15,55 @@ class SessionAuth(Auth):
         from models import storage
         if user_id is None or type(user_id) is not str:
             return None
-        session_id = str(uuid4())
-        self.user_id_by_session_id[session_id] = user_id
         user = storage.get_user(user_id)
         if user:
-            storage.update("User", user_id, session_id=session_id)
-        return session_id
+            session = Session()
+            session.user_id = user_id
+            session.save()
+            return session.id
+        return None
     
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """Returns a user based on Session ID"""
+        from models import storage
         if session_id is None or type(session_id) is not str:
             return None
-        return self.user_id_by_session_id.get(session_id, None)
-    
-    def check_db_current_user(self, request: Request) -> TypeVar("User"):
-        """Checks if a request is from a current user in the database"""
-        from models import storage
-        if not request:
-            return None
-        session_id = self.session_cookie(request)
-        all_users = storage.all("User")
-        for values in all_users.values():
-            if values.session_id == session_id:
-                return values
+        session = storage.search_key_value("Session", "id", session_id)
+        if session:
+            return session[0].user_id
         return None
     
-    def current_user(self, request: Request) -> TypeVar("User"):
-        """Returns a user instanc based on cookie value"""
+    def check_db_current_user(self, request: Request) -> TypeVar("User"):
+        """Checks if a request is from a current user in the database and returns the user"""
         from models import storage
         if not request:
             return None
         session_id = self.session_cookie(request)
-        user_id = self.user_id_for_session_id(session_id)
-        user = storage.get_user(user_id)
-        return user
+        if not session_id:
+            return None
+        session = storage.search_key_value("Session", "id", session_id)
+        if not session:
+            return None
+        user = storage.search_key_value("User", "id", session[0].user_id)
+        if not user:
+            return None
+        return user[0]
+    
+    def current_user(self, request: Request) -> TypeVar("User"):
+        """Returns a user instance based on cookie value"""
+        from models import storage
+        if not request:
+            return None
+        session_id = self.session_cookie(request)
+        if not session_id:
+            return None
+        session = storage.search_key_value("Session", "id", session_id)
+        if not session:
+            return None
+        user = storage.search_key_value("User", "id", session[0].user_id)
+        if not user:
+            return None
+        return user[0]
     
     def destroy_session(self, request: Request) -> bool:
         """Deletes a sesssion"""
@@ -57,11 +73,14 @@ class SessionAuth(Auth):
         session_id = self.session_cookie(request)
         if not session_id:
             return False
-        user_id = self.user_id_for_session_id(session_id)
-        if not user_id:
-            return False
-        del self.user_id_by_session_id[session_id]
-        storage.update("User", user_id, session_id=None)
+        session = storage.search_key_value("Session", "id", session_id)
+        if not session:
+            return None
+        user = storage.search_key_value("User", "id", session[0].user_id)
+        if not user:
+            return None
+        storage.delete(user[0])
+        storage.save
         return True
     
     

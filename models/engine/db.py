@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 from models.basemodel import Base
 from models.category import Category
 from models.place import Place
+from models.reply import Reply
 from models.review import Review
+from models.session import Session
 from models.user import User
 from os import environ
 from sqlalchemy import create_engine
@@ -18,7 +20,9 @@ classes = {
     "User": User,
     "Place": Place,
     "Review": Review,
-    "Category": Category
+    "Category": Category,
+    "Reply": Reply,
+    "Session": Session
 }
 
 

@@ -19,7 +19,6 @@ class User(BaseModel, Base):
     password = Column(String(250), nullable=False)
     role = Column(String(20), nullable=False, default="user")
     role_updater = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
-    session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
     email_verified = Column(String(10), nullable=False, default="no")
     barred = Column(String(10), nullable=False, default="no")

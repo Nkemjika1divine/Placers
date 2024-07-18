@@ -51,7 +51,7 @@ class Auth:
         return None
     
     def session_cookie(self, request: Request):
-        """Returns a cookie value from a request"""
+        """Returns a session id from a request's cookie"""
         if not request:
             return None
         my_session_id = environ.get("SESSION_NAME", None)
