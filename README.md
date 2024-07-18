@@ -69,6 +69,7 @@ API routes include:
 - `POST /api/v1/reviews`: Adds a new review
 - `PUT /api/v1/reviews/{review_id}`: Edits a review. This can only be done by the reviewer.
 - `DELETE /api/v1/reviews/{review_id}`: This deletes a review. It can only be done by the reviewer, an admin or the superuser
+- `GET /api/v1/{review_id}/replies`: This returns all the replies to a review
 
 ### Categories
 - `GET /api/v1/categories`: Returns all the categories in the application. This can only be done by the admins and the superuser

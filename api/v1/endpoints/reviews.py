@@ -131,3 +131,20 @@ def delete_a_review(request: Request, review_id: str = None) -> str:
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 
 
+@review_router.get("/{review_id}/replies")
+def get_replies_to_a_review(request: Request, review_id: str = None) -> str:
+    """GET method to get replies to a review"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not review_id:
+        raise Not_Found("Review not found")
+    if not request.state.current_user:
+        raise Unauthorized()
+    replies = storage.search_key_value("Reply", "review_id", review_id)
+    if not replies:
+        raise Not_Found("No replies found")
+    replies_list = []
+    for reply in replies:
+        replies_list.append(reply.to_dict())
+    return JSONResponse(content=replies_list, status_code=status.HTTP_200_OK)
