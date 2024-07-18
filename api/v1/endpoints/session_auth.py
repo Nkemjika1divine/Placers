@@ -85,7 +85,7 @@ async def login(request: Request) -> str:
         raise Not_Found("No user found for this email")
     # Check if the password is valid
     if not user[0].is_valid_password(hashed_password):
-        raise Unauthorized("Wrong password")
+        raise Unauthorized("Wrong password. Enter the correct password")
     # create a session id for the user
     session_id = auth.create_session(user[0].id)
     response = JSONResponse(user[0].to_dict())

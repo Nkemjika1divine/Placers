@@ -75,11 +75,11 @@ class SessionAuth(Auth):
             return False
         session = storage.search_key_value("Session", "id", session_id)
         if not session:
-            return None
+            return False
         user = storage.search_key_value("User", "id", session[0].user_id)
         if not user:
-            return None
-        storage.delete(user[0])
+            return False
+        storage.delete(session[0])
         storage.save
         return True
     

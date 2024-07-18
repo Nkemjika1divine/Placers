@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 """The Session Module"""
 from models.basemodel import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Float
-from typing import TypeVar
+from sqlalchemy import Column, String, ForeignKey
 
 
 class Session(BaseModel, Base):
