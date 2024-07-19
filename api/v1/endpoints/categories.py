@@ -99,3 +99,21 @@ async def edit_a_category(request: Request, category_id: str = None):
     category.user_who_updated_category = user_id
     category.save()
     return JSONResponse(content=category.to_dict(), status_code=status.HTTP_200_OK)
+
+
+@categories_router.delete("/categories/{category_id}")
+def delete_a_category(request: Request, category_id: str = None) -> str:
+    """DELETE method to delete a category"""
+    from models import storage
+    if not category_id:
+        raise Not_Found()
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    category = storage.search_key_value("Category", "id", category_id)
+    if not category:
+        raise Not_Found("Category does not exist")
+    storage.delete(category[0])
+    storage.save()
+    return JSONResponse(content={}, status_code=status.HTTP_200_OK)
