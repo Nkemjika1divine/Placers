@@ -5,6 +5,8 @@ from bcrypt import hashpw, checkpw, gensalt
 from email.message import EmailMessage
 from sqlalchemy import Column, String, ForeignKey
 from utils.utility import generate_token
+import os
+import shutil
 import smtplib
 
 
@@ -13,6 +15,7 @@ class User(BaseModel, Base):
     __tablename__ = "users"
     name = Column(String(50), nullable=False)
     username = Column(String(20), nullable=False, unique=True)
+    profile_picture = Column(String(250), nullable=True)
     current_city = Column(String(50), nullable=True)
     current_country = Column(String(50), nullable=True)
     email = Column(String(50), nullable=False, unique=True)
@@ -112,3 +115,18 @@ class User(BaseModel, Base):
         if token == self.reset_token:
             return True
         return False
+    
+    def change_profile_picture(self, file) -> str:
+        """Changes a user's profile picture"""
+        from models import storage
+        if not file:
+            return None
+        profile_pic_folder = "profile_pictures/"
+        if not os.path.exists(profile_pic_folder):
+            os.makedirs(profile_pic_folder)
+        file_path = os.path.join(profile_pic_folder, f"{self.id}_{file.filename}")
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        self.profile_picture = file_path
+        storage.save()
+        return file_path

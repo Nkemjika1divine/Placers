@@ -80,7 +80,7 @@ class SessionAuth(Auth):
         if not user:
             return False
         storage.delete(session[0])
-        storage.save
+        storage.save()
         return True
     
     

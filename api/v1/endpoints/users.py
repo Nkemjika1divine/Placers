@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """The /users endpoint module"""
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, UploadFile, HTTPException, File
 from fastapi.responses import JSONResponse
 from api.v1.error_handlers import Not_Found, Bad_Request, Unauthorized
 from models.user import User
@@ -325,6 +325,25 @@ async def profile_update(request: Request) -> str:
         user.current_country = user_data['current_country']
     user.save()
     return JSONResponse(content="User successfully updated", status_code=status.HTTP_200_OK)
+
+
+@user_router.put("/profile/update_profile_pic")
+async def update_profile_pic(request: Request, file: UploadFile = File(...)) -> str:
+    """POST method to update a user's profile picture"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not request.state.current_user:
+        raise Unauthorized()
+    try:
+        await request.json()
+    except Exception as e:
+        raise Bad_Request(f"Error: {e}")
+    user = request.state.current_user
+    path = user.change_profile_picture(file)
+    if not path:
+        raise HTTPException(status_code=500, detail=f"Failed to upload file")
+    return JSONResponse(content="File uploaded successfully", status_code=status.HTTP_200_OK)
 
 
 @user_router.get("/users/best_places_nearby")
