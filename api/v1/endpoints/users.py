@@ -32,7 +32,6 @@ def get_users(request: Request):
 def get_a_user(request: Request, user_id: str = None) -> str:
     """GET request for a particular user"""
     from models import storage
-    print("In GET userid")
     if not request:
         raise Bad_Request()
     if not request.state.current_user:
@@ -87,11 +86,12 @@ def search_for_a_user(request: Request, keyword: str = None) -> str:
     data = storage.all("User")
     for value in data.values():
         if check_if_word_exists(keyword, value.name):
-            user_list.append(value.to_dict())
+            user_list.append(value.to_safe_dict())
         elif check_if_word_exists(keyword, value.username):
-            user_list.append(value.to_dict())
-        return JSONResponse(content=user_list, status_code=status.HTTP_200_OK)
-    raise Not_Found()
+            user_list.append(value.to_safe_dict())
+    if len(user_list) == 0:
+        raise Not_Found("No results found")
+    return JSONResponse(content=user_list, status_code=status.HTTP_200_OK)
 
 
 @user_router.post("/users")
@@ -108,6 +108,7 @@ async def create_a_user(request: Request) -> str:
         request_body = await request.json()
     except Exception:
         raise Bad_Request()
+    # created_by = request.state.current_user.id
     name = request_body.get("name", None)
     if type(name) is not str:
         raise Bad_Request("Name must be a string")
@@ -117,10 +118,10 @@ async def create_a_user(request: Request) -> str:
     if storage.search_key_value("User", "username", username):
         raise Unauthorized("Username taken")
     current_city = request_body.get("current_city", None)
-    if type(current_city) is not str:
+    if current_city and type(current_city) is not str:
         raise Bad_Request("current_city must be a string")
     current_country = request_body.get("current_country", None)
-    if type(current_country) is not str:
+    if current_country and type(current_country) is not str:
         raise Bad_Request("current_country must be a string")
     email = request_body.get("email", None)
     if not email or type(email) is not str:
@@ -140,6 +141,7 @@ async def create_a_user(request: Request) -> str:
     new_user.current_country = current_country
     new_user.email = email
     new_user.password = password
+    # new_user.created_by = created_by
 
     new_user.save()
     return JSONResponse(content=new_user.to_safe_dict(), status_code=status.HTTP_201_CREATED)
@@ -210,6 +212,8 @@ def upgrade_user_role(request: Request, user_id: str = None):
     user = storage.search_key_value("User", "id", user_id)
     if not user:
         raise Not_Found("User does not exist")
+    if user[0].role == 'admin':
+        raise Unauthorized("User already an admin")
     user = user[0]
     user.role = "admin"
     user.role_updater = updater_id
@@ -233,6 +237,8 @@ def demote_an_admin(request: Request, user_id: str = None) -> str:
     user = storage.search_key_value("User", "id", user_id)
     if not user:
         raise Not_Found("User does not exist")
+    if user[0].role == 'user':
+        raise Unauthorized("User already a user")
     user = user[0]
     user.role = "user"
     user.save()
@@ -282,7 +288,7 @@ def get_user_place_ranking(request: Request, user_id: str = None) -> str:
         sorted_places.append(storage.search_key_value())
 
 
-@user_router.get("/users/profile")
+@user_router.get("/users/profile/me")
 def user_profile(request: Request) -> str:
     """GET method that Returns the profile of the user"""
     if not request:
@@ -324,7 +330,7 @@ async def profile_update(request: Request) -> str:
             raise Bad_Request("current_country must be a string")
         user.current_country = user_data['current_country']
     user.save()
-    return JSONResponse(content="User successfully updated", status_code=status.HTTP_200_OK)
+    return JSONResponse(content="Profile successfully updated", status_code=status.HTTP_200_OK)
 
 
 @user_router.put("/profile/update_profile_pic")
@@ -342,11 +348,11 @@ async def update_profile_pic(request: Request, file: UploadFile = File(...)) -> 
     user = request.state.current_user
     path = user.change_profile_picture(file)
     if not path:
-        raise HTTPException(status_code=500, detail=f"Failed to upload file")
+        raise HTTPException(status_code=500, detail="Failed to upload file")
     return JSONResponse(content="File uploaded successfully", status_code=status.HTTP_200_OK)
 
 
-@user_router.get("/users/best_places_nearby")
+@user_router.get("/users/find/best_places_nearby")
 def get_best_places_nearby(request: Request) -> str:
     """GET method that returns the best places near a user using average rating"""
     from models import storage
@@ -354,7 +360,7 @@ def get_best_places_nearby(request: Request) -> str:
         raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
-    user_city = request.state.current_user.city
+    user_city = request.state.current_user.current_city
     all_places = storage.all("Place")
     if not all_places:
         raise Not_Found("no place in the database yet")

@@ -56,14 +56,14 @@ class BaseModel:
         copy['__class__'] = self.__class__.__name__
         if 'password' in copy:
             del copy['password']
-        if 'session_id' in copy:
-            del copy['session_id']
         if "_sa_instance_state" in copy:
             del copy["_sa_instance_state"]
+        if '__class__' in copy:
+            del copy['__class__']
         if 'reset_token' in copy:
             del copy['reset_token']
-        if 'session_id' in copy:
-            del copy['session_id']
+        if 'email_verified' in copy:
+            del copy['email_verified']
         return copy
     
     def __str__(self) -> str:

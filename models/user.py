@@ -13,6 +13,7 @@ import smtplib
 class User(BaseModel, Base):
     """The User model"""
     __tablename__ = "users"
+    # created_by = Column(String(50), ForeignKey("users.id", ondelete='CASCADE'), nullable=True)
     name = Column(String(50), nullable=False)
     username = Column(String(20), nullable=False, unique=True)
     profile_picture = Column(String(250), nullable=True)

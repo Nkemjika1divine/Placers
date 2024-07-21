@@ -60,9 +60,13 @@ async def add_new_category(request: Request):
         request_body = await request.json()
     except Exception:
         raise Bad_Request()
+    categories = storage.all("Category")
     name = request_body.get("category_name", None)
     if not name or type(name) is not str:
         raise Bad_Request("category_name missing or not a string")
+    for value in categories.values():
+        if value.category_name.lower() == name.lower():
+            raise Unauthorized("Category already exists")
     
     new_category = Category()
     new_category.category_name = name

@@ -58,7 +58,7 @@ def number_of_replies(request: Request):
     if not request.state.current_user:
         raise Unauthorized()
     reply_count = storage.count("Reply")
-    return JSONResponse(content={"users": reply_count}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={"categories": reply_count}, status_code=status.HTTP_200_OK)
 
 
 @index_router.get("/number_of_categories")
@@ -67,5 +67,27 @@ def number_of_categories(request: Request):
     from models import storage
     if not request.state.current_user:
         raise Unauthorized()
-    categories_count = storage.count("User")
-    return JSONResponse(content={"users": categories_count}, status_code=status.HTTP_200_OK)
+    categories_count = storage.count("Category")
+    return JSONResponse(content={"categories": categories_count}, status_code=status.HTTP_200_OK)
+
+
+@index_router.get("/categories_count")
+def number_of_specific_categories(request: Request):
+    """GET request that returns the count of places belonging to categories in the database"""
+    from models import storage
+    if not request.state.current_user:
+        raise Unauthorized()
+    places = storage.all("Place")
+    categories = storage.all("Category")
+    if not categories:
+        raise Not_Found("No categories yet")
+    final_count = []
+    for category in categories.values():
+        count = 0
+        for place in places.values():
+            if place.category_id == category.id:
+                count += 1
+        final_count.append({category.category_name: count})
+    return JSONResponse(content=final_count, status_code=status.HTTP_200_OK)
+
+        
