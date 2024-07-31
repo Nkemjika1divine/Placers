@@ -14,7 +14,7 @@ def get_all_replies(request: Request) -> str:
     """GET method to return all replies in the database"""
     from models import storage
     if not request:
-        return Bad_Request()
+        raise Bad_Request()
     if not request.state.current_user:
         raise Unauthorized()
     all_replies = []
@@ -29,7 +29,7 @@ def get_a_reply(request: Request, reply_id: str = None) -> str:
     """GET method for a particular reply"""
     from models import storage
     if not request:
-        return Bad_Request()
+        raise Bad_Request()
     if not reply_id:
         raise Not_Found()
     if not request.state.current_user:
@@ -46,7 +46,7 @@ def delete_a_reply(request: Request, reply_id: str = None) -> str:
     """DELETE method that deletes a reply"""
     from models import storage
     if not request:
-        return Bad_Request()
+        raise Bad_Request()
     if not reply_id:
         raise Not_Found()
     if not request.state.current_user:
@@ -63,12 +63,12 @@ def delete_a_reply(request: Request, reply_id: str = None) -> str:
     return JSONResponse(content={}, status_code=status.HTTP_200_OK)
 
 
-@replies_router.post("/replies/{review_id}/")
+@replies_router.post("/replies/{review_id}")
 async def post_a_new_reply(request: Request, review_id: str = None) -> str:
     """POST method that adds a new reply to a review"""
     from models import storage
     if not request:
-        return Bad_Request()
+        raise Bad_Request()
     if not review_id:
         raise Not_Found()
     if not request.state.current_user:
@@ -88,3 +88,28 @@ async def post_a_new_reply(request: Request, review_id: str = None) -> str:
     reply = Reply(review_id=review_id, user_id=user_id, full_reply=full_reply)
     reply.save()
     return JSONResponse(content=reply.to_dict(), status_code=status.HTTP_201_CREATED)
+
+
+@replies_router.put("/replies/{reply_id}")
+async def post_a_new_reply(request: Request, reply_id: str = None) -> str:
+    """PUT method that edits a reply"""
+    from models import storage
+    if not request:
+        raise Bad_Request()
+    if not reply_id:
+        raise Not_Found()
+    if not request.state.current_user:
+        raise Unauthorized()
+    reply = storage.search_key_value("Reply", "id", reply_id)
+    if not reply:
+        raise Not_Found()
+    if reply.user_id != request.state.current_user.id:
+        raise Unauthorized("You are not authorized to perform this action")
+    try:
+        body = await request.json()
+    except Exception as e:
+        raise Bad_Request(f"Error: {e}")
+    if "full_reply" in body:
+        reply.full_reply = body["full_reply"]
+    reply.save()
+    return JSONResponse(content=reply.to_dict(), status_code=status.HTTP_200_OK)

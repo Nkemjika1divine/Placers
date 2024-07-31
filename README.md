@@ -84,6 +84,7 @@ API routes include:
 - `GET /api/v1/replies/{reply_id}`: Return a particular reply from the database
 - `DELETE /api/v1/replies/{reply_id}`: Deletes a reply from the database
 - `POST /api/v1/replies/{review_id}`: adds a new reply to a review
+- `PUT /api/v1/replies/{reply_id}`: edits a reply. This can only be done by the author of the reply.
 
 ## Role Description:
 
