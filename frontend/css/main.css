@@ -5,6 +5,10 @@ body {
     text-align: left;
 }
 
+a {
+    cursor: crosshair;
+}
+
 .index-header {
     width: 100%;
     height: 60px;
@@ -23,8 +27,21 @@ body {
 }
 
 .index-header-nav {
+    height: 30px;
+    width: 100%;
     
+}
+
+.index-header-nav ul {
     
+}
+
+.index-header-nav ul li {
+    display: inline;
+}
+
+.index-header-nav ul li a {
+
 }
 
 .index-header-sm {

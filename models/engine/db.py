@@ -86,7 +86,6 @@ class DB:
     
     def new(self, obj) -> None:
         """add an object to the database"""
-        from models.user import User
         if obj.__class__.__name__ == "User":
             hashed = obj.hash_password(obj.password)
             if not hashed:
